@@ -186,6 +186,14 @@ button,
 	line-height: 1.7;
 }
 
+.phone-number,
+.phone-number a,
+.contact-info a[href^="tel:"] {
+	color: var(--ink) !important;
+	-webkit-text-fill-color: var(--ink);
+	text-decoration: none;
+}
+
 .doc-details {
 	text-align: right;
 }
