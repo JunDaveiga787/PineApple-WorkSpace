@@ -596,6 +596,7 @@ button,
 		height: 11in;
 		margin: 0;
 		padding: 0;
+		position: relative;
 		background: white;
 		-webkit-print-color-adjust: exact;
 		print-color-adjust: exact;
@@ -621,10 +622,14 @@ button,
 	}
 
 	.page {
+		position: absolute;
+		top: 0;
+		left: 0;
 		width: 8.5in;
 		height: 10.95in;
 		min-height: 0;
 		max-height: 10.95in;
+		margin: 0;
 		padding: 45px 55px;
 		border-radius: 0;
 		box-shadow: none;
