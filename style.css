@@ -586,21 +586,20 @@ button,
 	}
 
 	html {
-		width: 8.5in;
-		height: 10.9in;
-		overflow: hidden;
+		width: auto;
+		height: auto;
+		overflow: visible;
 	}
 
 	body {
-		width: 8.5in;
-		height: 10.9in;
+		width: auto;
+		height: auto;
 		margin: 0;
 		padding: 0;
-		position: relative;
 		background: white;
 		-webkit-print-color-adjust: exact;
 		print-color-adjust: exact;
-		overflow: hidden;
+		overflow: visible;
 	}
 
 	.controls {
@@ -622,18 +621,15 @@ button,
 	}
 
 	.page {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 8.5in;
-		height: 10.8in;
+		position: relative;
+		width: 100%;
+		height: auto;
 		min-height: 0;
-		max-height: 10.8in;
+		max-height: none;
 		margin: 0;
 		padding: 45px 55px;
 		border-radius: 0;
 		box-shadow: none;
-		overflow: hidden;
 		page-break-before: avoid;
 		page-break-after: avoid;
 		page-break-inside: avoid;
