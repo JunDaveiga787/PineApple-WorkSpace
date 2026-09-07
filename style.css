@@ -656,3 +656,34 @@ button,
 		background: transparent;
 	}
 }
+
+
+
+/* ELIMINAR LA SEGUNDA PAGINA AL IMPRIMIR */
+
+@media print {
+  @page {
+    margin: 0; /* Quita el margen que pone el navegador por defecto */
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: auto; /* Evita que alturas al 100% o 100vh fuercen saltos de página */
+    overflow: hidden; /* Corta cualquier desbordamiento invisible */
+  }
+}
+
+@media print {
+  .boton-imprimir, nav, footer {
+    display: none !important;
+  }
+}
+
+
+@media print {
+  .contenedor-factura {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+}
