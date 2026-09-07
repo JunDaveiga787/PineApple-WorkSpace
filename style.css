@@ -588,6 +588,8 @@ button,
 	body {
 		padding: 0;
 		background: white;
+		-webkit-print-color-adjust: exact;
+		print-color-adjust: exact;
 	}
 
 	.controls {
@@ -597,6 +599,13 @@ button,
 	.items-table th:last-child,
 	.items-table td:last-child {
 		display: none;
+	}
+
+	.meta-label,
+	.meta-value,
+	.items-table th,
+	.items-table td {
+		color: var(--ink);
 	}
 
 	.page {
