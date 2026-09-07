@@ -257,7 +257,7 @@ button,
 }
 
 .items-table td:nth-child(2) {
-	color: var(--muted);
+	color: var(--ink);
 	text-align: center;
 }
 
@@ -584,6 +584,11 @@ button,
 
 	.controls {
 		display: none !important;
+	}
+
+	.items-table th:last-child,
+	.items-table td:last-child {
+		display: none;
 	}
 
 	.page {
