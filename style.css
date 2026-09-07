@@ -585,7 +585,16 @@ button,
 		size: letter portrait;
 	}
 
+	html {
+		width: 8.5in;
+		height: 11in;
+		overflow: hidden;
+	}
+
 	body {
+		width: 8.5in;
+		height: 11in;
+		margin: 0;
 		padding: 0;
 		background: white;
 		-webkit-print-color-adjust: exact;
@@ -612,7 +621,7 @@ button,
 	}
 
 	.page {
-		width: 100%;
+		width: 8.5in;
 		height: 10.95in;
 		min-height: 0;
 		max-height: 10.95in;
