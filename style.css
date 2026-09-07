@@ -586,20 +586,20 @@ button,
 	}
 
 	html {
-		width: auto;
-		height: auto;
+		width: 8.5in;
+		height: 11in;
 		overflow: visible;
 	}
 
 	body {
-		width: auto;
-		height: auto;
+		width: 8.5in;
+		height: 0;
 		margin: 0;
 		padding: 0;
 		background: white;
 		-webkit-print-color-adjust: exact;
 		print-color-adjust: exact;
-		overflow: visible;
+		overflow: hidden;
 	}
 
 	.controls {
@@ -621,11 +621,13 @@ button,
 	}
 
 	.page {
-		position: relative;
-		width: 100%;
-		height: auto;
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 8.5in;
+		height: 10.95in;
 		min-height: 0;
-		max-height: none;
+		max-height: 10.95in;
 		margin: 0;
 		padding: 45px 55px;
 		border-radius: 0;
