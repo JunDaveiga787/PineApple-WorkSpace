@@ -586,7 +586,7 @@ button,
 	}
 
 	html {
-		height: auto;
+		height: 10.5in;
 		overflow: hidden;
 	}
 
@@ -595,7 +595,7 @@ button,
 		top: 0;
 		left: 0;
 		width: 100%;
-		height: auto;
+		height: 10.5in;
 		margin: 0;
 		padding: 0;
 		background: white;
@@ -625,13 +625,14 @@ button,
 	.page {
 		position: relative;
 		width: 100%;
-		height: auto;
+		height: 10.5in;
 		min-height: 0;
-		max-height: none;
+		max-height: 10.5in;
 		margin: 0;
 		padding: 45px 55px;
 		border-radius: 0;
 		box-shadow: none;
+		overflow: hidden;
 		page-break-before: avoid;
 		page-break-after: avoid !important;
 		page-break-inside: avoid;
