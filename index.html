@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="format-detection" content="telephone=no">
     <title>Work Center | PineApple Multiservice</title>
     <link rel="stylesheet" href="style.css">
@@ -203,6 +203,24 @@
             title.innerText = nextType;
             button.innerText = isInvoice ? 'Factura' : 'Cotización';
         }
+
+        document.addEventListener('keydown', function (event) {
+            if ((event.ctrlKey || event.metaKey) && ['+', '=', '-', '_', '0'].includes(event.key)) {
+                event.preventDefault();
+            }
+        });
+
+        document.addEventListener('wheel', function (event) {
+            if (event.ctrlKey || event.metaKey) {
+                event.preventDefault();
+            }
+        }, { passive: false });
+
+        ['gesturestart', 'gesturechange', 'gestureend'].forEach(function (eventName) {
+            document.addEventListener(eventName, function (event) {
+                event.preventDefault();
+            }, { passive: false });
+        });
 
         // Calcular totales al inicio
         window.onload = updateGrandTotal;
