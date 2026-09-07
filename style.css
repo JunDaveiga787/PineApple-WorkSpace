@@ -587,13 +587,13 @@ button,
 
 	html {
 		width: 8.5in;
-		height: 11in;
+		height: 10.9in;
 		overflow: hidden;
 	}
 
 	body {
 		width: 8.5in;
-		height: 11in;
+		height: 10.9in;
 		margin: 0;
 		padding: 0;
 		position: relative;
@@ -626,9 +626,9 @@ button,
 		top: 0;
 		left: 0;
 		width: 8.5in;
-		height: 10.95in;
+		height: 10.8in;
 		min-height: 0;
-		max-height: 10.95in;
+		max-height: 10.8in;
 		margin: 0;
 		padding: 45px 55px;
 		border-radius: 0;
