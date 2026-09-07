@@ -590,6 +590,7 @@ button,
 		background: white;
 		-webkit-print-color-adjust: exact;
 		print-color-adjust: exact;
+		overflow: hidden;
 	}
 
 	.controls {
@@ -612,10 +613,24 @@ button,
 
 	.page {
 		width: 100%;
-		min-height: 100vh;
+		height: 11in;
+		min-height: 0;
 		padding: 45px 55px;
 		border-radius: 0;
 		box-shadow: none;
+		page-break-before: avoid;
+		page-break-after: avoid;
+		page-break-inside: avoid;
+		break-before: avoid;
+		break-after: avoid;
+		break-inside: avoid;
+	}
+
+	.items-table,
+	.totals-section,
+	.footer {
+		page-break-inside: avoid;
+		break-inside: avoid;
 	}
 
 	[contenteditable="true"] {
