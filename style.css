@@ -591,6 +591,10 @@ button,
 	}
 
 	body {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
 		height: auto;
 		margin: 0;
 		padding: 0;
@@ -629,10 +633,10 @@ button,
 		border-radius: 0;
 		box-shadow: none;
 		page-break-before: avoid;
-		page-break-after: avoid;
+		page-break-after: avoid !important;
 		page-break-inside: avoid;
 		break-before: avoid;
-		break-after: avoid;
+		break-after: avoid !important;
 		break-inside: avoid;
 	}
 
