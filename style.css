@@ -6,6 +6,9 @@
 	--line: #e5e5ea;
 	--blue: #0071e3;
 	--blue-dark: #0066cc;
+	--secondary: #a855f7;
+	--secondary-dark: #7e3af2;
+	--secondary-soft: #d8b4fe;
 	--green: #34c759;
 	--shadow: 0 24px 70px rgba(29, 29, 31, 0.10), 0 3px 12px rgba(29, 29, 31, 0.04);
 }
@@ -83,23 +86,30 @@ button,
 	align-items: center;
 	justify-content: center;
 	gap: 7px;
+	height: 42px;
 	min-height: 42px;
-	padding: 0 17px;
-	border: 0;
-	border-radius: 11px;
+	padding: 0 20px;
+	border: 2px solid rgba(243, 229, 255, 0.85);
+	border-radius: 30px;
 	color: #fff;
-	background: var(--blue);
+	background: linear-gradient(135deg, #d5b9ff 0%, #bb7df6 24%, #9450ea 52%, #7a3fe2 100%);
+	box-shadow: 0 0 0 1px rgba(170, 109, 250, 0.35), 0 10px 18px rgba(123, 74, 227, 0.25);
 	font-size: 13px;
-	font-weight: 600;
+	font-weight: 700;
 	letter-spacing: -0.1px;
+	line-height: 1;
 	cursor: pointer;
-	transition: background 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+	appearance: none;
+	-webkit-appearance: none;
+	overflow: visible;
+	transition: transform 160ms ease, box-shadow 160ms ease, filter 160ms ease;
 }
 
 .btn:hover {
-	background: var(--blue-dark);
-	box-shadow: 0 5px 14px rgba(0, 113, 227, 0.22);
+	background: linear-gradient(135deg, #e4ceff 0%, #ce96ff 24%, #a96af8 52%, #833fe6 100%);
+	box-shadow: 0 0 0 1px rgba(196, 145, 255, 0.5), 0 14px 24px rgba(123, 74, 227, 0.32);
 	transform: translateY(-1px);
+	filter: brightness(1.04);
 }
 
 .btn:active {
@@ -113,14 +123,20 @@ button,
 }
 
 .btn-secondary {
-	color: var(--ink);
-	background: #f0f0f2;
+	min-width: 0;
+	white-space: nowrap;
+	text-overflow: clip;
+	border: 2px solid rgba(243, 229, 255, 0.85);
+	border-radius: 30px;
+	color: #fff;
+	background: linear-gradient(135deg, #d1a7ff 0%, #b373f5 24%, #8b4ef1 52%, #7c3fe5 100%);
+	box-shadow: 0 0 0 1px rgba(170, 109, 250, 0.35), 0 10px 18px rgba(123, 74, 227, 0.25);
 }
 
 .btn-secondary:hover {
-	color: var(--ink);
-	background: #e5e5e7;
-	box-shadow: none;
+	color: #fff;
+	background: linear-gradient(135deg, #e0c1ff 0%, #c68bff 24%, #9d5cf7 52%, #853de7 100%);
+	box-shadow: 0 0 0 1px rgba(196, 145, 255, 0.5), 0 14px 24px rgba(123, 74, 227, 0.32);
 }
 
 .page {
@@ -394,8 +410,31 @@ button,
 	box-shadow: 0 0 0 4px #f5f5f7;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 900px) {
+	.page {
+		padding: 56px 42px 42px;
+	}
+
+	.header {
+		gap: 26px;
+	}
+
+	.brand-section {
+		align-items: flex-start;
+	}
+
+	.doc-details {
+		text-align: left;
+	}
+
+	.doc-meta {
+		justify-content: start;
+	}
+}
+
+@media (max-width: 760px) {
 	body {
+		padding: 12px 8px 32px;
 		-webkit-tap-highlight-color: transparent;
 		touch-action: manipulation;
 	}
@@ -403,12 +442,6 @@ button,
 	[contenteditable="true"] {
 		-webkit-user-select: text;
 		user-select: text;
-	}
-}
-
-@media (max-width: 720px) {
-	body {
-		padding: 12px 8px 32px;
 	}
 
 	.controls {
@@ -426,7 +459,7 @@ button,
 
 	.controls-actions {
 		display: grid;
-		grid-template-columns: 1fr 1fr;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 
 	.btn {
@@ -436,7 +469,7 @@ button,
 
 	.page {
 		min-height: auto;
-		padding: 32px 20px 28px;
+		padding: 30px 18px 28px;
 		border-radius: 20px;
 	}
 
@@ -444,21 +477,32 @@ button,
 		align-items: flex-start;
 		flex-direction: column;
 		gap: 26px;
-		margin-bottom: 32px;
+		margin-bottom: 30px;
+	}
+
+	.brand-section {
+		width: 100%;
+		gap: 14px;
+	}
+
+	.logo-img {
+		width: 58px;
+		height: 58px;
 	}
 
 	.doc-details {
 		width: 100%;
-		text-align: left;
 	}
 
 	.doc-meta {
+		grid-template-columns: auto 1fr;
 		justify-content: start;
+		gap: 8px 12px;
 	}
 
 	.doc-title {
-		margin-bottom: 14px;
-		font-size: 34px;
+		margin-bottom: 12px;
+		font-size: clamp(28px, 7vw, 34px);
 	}
 
 	.items-table {
@@ -475,7 +519,7 @@ button,
 	}
 
 	.items-table th {
-		font-size: 9px;
+		font-size: 8px;
 		line-height: 1.25;
 	}
 
@@ -491,8 +535,8 @@ button,
 
 	.items-table th:first-child { width: 32%; }
 	.items-table th:nth-child(2) { width: 10%; }
-	.items-table th:nth-child(3) { width: 24%; }
-	.items-table th:nth-child(4) { width: 24%; }
+	.items-table th:nth-child(3) { width: 25%; }
+	.items-table th:nth-child(4) { width: 23%; }
 	.items-table th:last-child { width: 10%; }
 
 	.totals-section {
@@ -524,16 +568,7 @@ button,
 	}
 
 	.page {
-		padding: 26px 16px 24px;
-	}
-
-	.brand-section {
-		gap: 14px;
-	}
-
-	.logo-img {
-		width: 58px;
-		height: 58px;
+		padding: 24px 14px 22px;
 	}
 
 	.brand-name {
@@ -551,10 +586,6 @@ button,
 
 	.items-table {
 		margin-bottom: 32px;
-	}
-
-	.items-table th {
-		font-size: 8px;
 	}
 
 	.items-table td {
