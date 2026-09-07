@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Work Center | PineApple Multiservice</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Panel de controles -->
+    <div class="controls" aria-label="Acciones de la cotización">
+        <div class="controls-label"><span class="status-dot"></span> Documento editable</div>
+        <div class="controls-actions">
+            <button class="btn btn-secondary" onclick="addRow()"><span aria-hidden="true">+</span> Agregar producto</button>
+            <button class="btn btn-secondary" onclick="toggleDocumentType(this)">Factura</button>
+            <button class="btn" onclick="window.print()"><span aria-hidden="true">↗</span> Exportar PDF</button>
+        </div>
+    </div>
+
+    <!-- Hoja de Factura -->
+    <div class="page">
+        <div>
+            <!-- ENCABEZADO -->
+            <div class="header">
+                <div class="brand-section">
+                    <!-- LOGO OFICIAL DESDE CLOUDINARY -->
+                    <img src="https://res.cloudinary.com/nox-company/image/upload/v1788809929/PineApple%20Service%20Media/ChatGPT_Image_Sep_7_2026_03_13_58_PM-Photoroom_eikjws.png" alt="PineApple Logo" class="logo-img">
+                    <div class="brand-info">
+                        <div class="brand-name" contenteditable="true">PINEAPPLE</div>
+                        <div class="brand-subtitle" contenteditable="true">MultiService</div>
+                        <div class="contact-info">
+                            <span contenteditable="true">Tel: 809-298-7496</span><br>
+                            <span contenteditable="true">www.pineapplemultiservice.com</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="doc-details">
+                    <div class="doc-title" contenteditable="true">COTIZACIÓN</div>
+                    <div class="doc-meta">
+                        <span class="meta-label">Fecha:</span>
+                        <span class="meta-value" contenteditable="true">22/07/2026</span>
+                        
+                        <span class="meta-label">Cliente:</span>
+                        <span class="meta-value" contenteditable="true">RES. CLAUDETTE</span>
+                        
+                        <span class="meta-label">ID Cliente:</span>
+                        <span class="meta-value" contenteditable="true">@01</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- TABLA DE PRODUCTOS -->
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th>Descripción del Producto</th>
+                        <th>Cant.</th>
+                        <th>Precio Unitario</th>
+                        <th>Total</th>
+                        <th aria-label="Acciones"></th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <tr>
+                        <td contenteditable="true">INVERSOR SENOIDAL 3.5KW</td>
+                        <td contenteditable="true" class="qty" oninput="recalc(this)">1</td>
+                        <td contenteditable="true" class="price" oninput="recalc(this)">40,000</td>
+                        <td class="row-total">$ 40,000.00</td>
+                        <td><button class="delete-btn" type="button" onclick="removeRow(this)" aria-label="Eliminar producto" title="Eliminar producto"><span aria-hidden="true">&times;</span></button></td>
+                    </tr>
+                    <tr>
+                        <td contenteditable="true">Baterías gel 12v 110AH</td>
+                        <td contenteditable="true" class="qty" oninput="recalc(this)">2</td>
+                        <td contenteditable="true" class="price" oninput="recalc(this)">13,200</td>
+                        <td class="row-total">$ 26,400.00</td>
+                        <td><button class="delete-btn" type="button" onclick="removeRow(this)" aria-label="Eliminar producto" title="Eliminar producto"><span aria-hidden="true">&times;</span></button></td>
+                    </tr>
+                    <tr>
+                        <td contenteditable="true">Mano de obra</td>
+                        <td contenteditable="true" class="qty" oninput="recalc(this)">1</td>
+                        <td contenteditable="true" class="price" oninput="recalc(this)">10,000</td>
+                        <td class="row-total">$ 10,000.00</td>
+                        <td><button class="delete-btn" type="button" onclick="removeRow(this)" aria-label="Eliminar producto" title="Eliminar producto"><span aria-hidden="true">&times;</span></button></td>
+                    </tr>
+                    <tr>
+                        <td contenteditable="true">Cable 10/3 (30 pies)</td>
+                        <td contenteditable="true" class="qty" oninput="recalc(this)">1</td>
+                        <td contenteditable="true" class="price" oninput="recalc(this)">2,400</td>
+                        <td class="row-total">$ 2,400.00</td>
+                        <td><button class="delete-btn" type="button" onclick="removeRow(this)" aria-label="Eliminar producto" title="Eliminar producto"><span aria-hidden="true">&times;</span></button></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- SECCIÓN DE TOTALES -->
+            <div class="totals-section">
+                <div class="totals-box">
+                    <div class="total-row">
+                        <span style="color: var(--apple-text-muted);">Subtotal</span>
+                        <span id="sub-total">$ 78,800.00</span>
+                    </div>
+                    <div class="total-row grand-total">
+                        <span>Total</span>
+                        <span id="grand-total">$ 78,800.00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PIE DE PÁGINA -->
+        <div class="footer">
+            <div class="footer-qr">
+                <!-- NUEVO CÓDIGO QR SVG DESDE CLOUDINARY -->
+                <img src="https://res.cloudinary.com/nox-company/image/upload/v1788809227/PineApple%20Service%20Media/extended_pcjf56.svg" alt="Código QR" class="qr-img">
+                <div class="footer-text">
+                    <span class="slogan" contenteditable="true">Escanea para más información</span>
+                </div>
+            </div>
+            <div class="footer-text" style="text-align: right;">
+                <span class="slogan" contenteditable="true">¡Soluciones Integrales, Resultados Brillantes!</span>
+                <span class="copyright" contenteditable="true">PineApple Multiservices © 2026</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function parseVal(str) {
+            if (!str) return 0;
+            let clean = str.toString().replace(/[^0-9.-]+/g, "");
+            return parseFloat(clean) || 0;
+        }
+
+        function formatNum(num) {
+            if (num === 0) return "0.00";
+            return new Intl.NumberFormat('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(num);
+        }
+
+        function recalc(elem) {
+            const row = elem.closest('tr');
+            const qtyStr = row.querySelector('.qty').innerText;
+            const priceStr = row.querySelector('.price').innerText;
+
+            const qty = parseVal(qtyStr);
+            const price = parseVal(priceStr);
+            const totalCell = row.querySelector('.row-total');
+
+            if (qtyStr.trim() === "" && priceStr.trim() === "") {
+                totalCell.innerText = "";
+            } else {
+                const total = qty * price;
+                totalCell.innerText = '$ ' + formatNum(total);
+            }
+
+            updateGrandTotal();
+        }
+
+        function updateGrandTotal() {
+            const totals = document.querySelectorAll('.row-total');
+            let grandTotal = 0;
+
+            totals.forEach(cell => {
+                const val = parseVal(cell.innerText);
+                grandTotal += val;
+            });
+
+            const formattedTotal = '$ ' + formatNum(grandTotal);
+            document.getElementById('sub-total').innerText = formattedTotal;
+            document.getElementById('grand-total').innerText = formattedTotal;
+        }
+
+        function addRow() {
+            const tbody = document.getElementById('table-body');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td contenteditable="true">Nuevo Artículo</td>
+                <td contenteditable="true" class="qty" oninput="recalc(this)">1</td>
+                <td contenteditable="true" class="price" oninput="recalc(this)">0</td>
+                <td class="row-total">$ 0.00</td>
+                <td><button class="delete-btn" type="button" onclick="removeRow(this)" aria-label="Eliminar producto" title="Eliminar producto"><span aria-hidden="true">&times;</span></button></td>
+            `;
+            tbody.appendChild(newRow);
+            updateGrandTotal();
+        }
+
+        function removeRow(button) {
+            button.closest('tr').remove();
+            updateGrandTotal();
+        }
+
+        function toggleDocumentType(button) {
+            const title = document.querySelector('.doc-title');
+            const isInvoice = title.innerText.trim().toUpperCase() === 'FACTURA';
+            const nextType = isInvoice ? 'COTIZACIÓN' : 'FACTURA';
+
+            title.innerText = nextType;
+            button.innerText = isInvoice ? 'Factura' : 'Cotización';
+        }
+
+        // Calcular totales al inicio
+        window.onload = updateGrandTotal;
+    </script>
+</body>
+</html>
