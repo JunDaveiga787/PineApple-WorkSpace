@@ -586,14 +586,12 @@ button,
 	}
 
 	html {
-		width: 8.5in;
-		height: 11in;
-		overflow: visible;
+		height: auto;
+		overflow: hidden;
 	}
 
 	body {
-		width: 8.5in;
-		height: 0;
+		height: auto;
 		margin: 0;
 		padding: 0;
 		background: white;
@@ -621,13 +619,11 @@ button,
 	}
 
 	.page {
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 8.5in;
-		height: 10.95in;
+		position: relative;
+		width: 100%;
+		height: auto;
 		min-height: 0;
-		max-height: 10.95in;
+		max-height: none;
 		margin: 0;
 		padding: 45px 55px;
 		border-radius: 0;
@@ -661,29 +657,3 @@ button,
 
 /* ELIMINAR LA SEGUNDA PAGINA AL IMPRIMIR */
 
-@media print {
-  @page {
-    margin: 0; /* Quita el margen que pone el navegador por defecto */
-  }
-
-  html, body {
-    margin: 0;
-    padding: 0;
-    height: auto; /* Evita que alturas al 100% o 100vh fuercen saltos de página */
-    overflow: hidden; /* Corta cualquier desbordamiento invisible */
-  }
-}
-
-@media print {
-  .boton-imprimir, nav, footer {
-    display: none !important;
-  }
-}
-
-
-@media print {
-  .contenedor-factura {
-    page-break-after: avoid;
-    break-after: avoid;
-  }
-}
