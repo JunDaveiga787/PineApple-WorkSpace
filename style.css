@@ -1405,6 +1405,12 @@ button,
 	gap: 24px !important;
 }
 
+.pdf-export-page .footer-text,
+.pdf-export-page .slogan,
+.pdf-export-page .copyright {
+	white-space: nowrap !important;
+}
+
 .pdf-export-page .footer-qr {
 	flex: 0 0 auto !important;
 	gap: 16px !important;
@@ -1416,6 +1422,7 @@ button,
 	flex-basis: 68px !important;
 	border-radius: 0 !important;
 	object-fit: contain !important;
+	object-position: center !important;
 }
 
 .pdf-export-page .total-row {
