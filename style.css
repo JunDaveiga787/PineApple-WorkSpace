@@ -1305,20 +1305,43 @@ button,
 	width: 794px !important;
 	min-height: 1123px !important;
 	height: auto !important;
-	padding: 56px 58px 42px !important;
+	padding: 48px 54px 34px !important;
 	border-radius: 0 !important;
+	justify-content: space-between !important;
 }
 
 .pdf-export-page .header {
 	flex-direction: row !important;
-	gap: 28px !important;
-	margin-bottom: 36px !important;
+	gap: 24px !important;
+	margin-bottom: 30px !important;
 }
 
 .pdf-export-page .brand-section {
 	width: auto !important;
 	align-items: center !important;
-	gap: 18px !important;
+	gap: 20px !important;
+}
+
+.pdf-export-page .logo-img {
+	width: 92px !important;
+	height: 92px !important;
+	padding: 5px !important;
+	border-radius: 22px !important;
+}
+
+.pdf-export-page .brand-name {
+	font-size: 30px !important;
+	letter-spacing: -1px !important;
+}
+
+.pdf-export-page .brand-subtitle {
+	font-size: 17px !important;
+}
+
+.pdf-export-page .contact-info {
+	margin-top: 12px !important;
+	font-size: 14px !important;
+	line-height: 1.55 !important;
 }
 
 .pdf-export-page .doc-details {
@@ -1330,6 +1353,12 @@ button,
 	grid-template-columns: auto auto !important;
 	justify-content: end !important;
 	gap: 7px 12px !important;
+	font-size: 14px !important;
+}
+
+.pdf-export-page .doc-title {
+	margin-bottom: 14px !important;
+	font-size: 39px !important;
 }
 
 .pdf-export-page .divider {
@@ -1343,14 +1372,21 @@ button,
 .pdf-export-page .items-table td {
 	padding-top: 13px !important;
 	padding-bottom: 13px !important;
+	font-size: 14px !important;
+}
+
+.pdf-export-page .items-table th {
+	font-size: 11px !important;
+	padding-top: 0 !important;
+	padding-bottom: 12px !important;
 }
 
 .pdf-export-page .totals-section {
-	margin-bottom: 34px !important;
+	margin-bottom: 0 !important;
 }
 
 .pdf-export-page .total-row.grand-total {
-	font-size: 21px !important;
+	font-size: 25px !important;
 }
 
 .pdf-export-page .pdf-empty-row {
@@ -1365,6 +1401,23 @@ button,
 	align-items: center !important;
 	flex-direction: row !important;
 	gap: 24px !important;
+}
+
+.pdf-export-page .total-row {
+	font-size: 15px !important;
+}
+
+.pdf-export-page .footer .slogan {
+	font-size: 14px !important;
+}
+
+.pdf-export-page .footer .copyright {
+	font-size: 13px !important;
+}
+
+.pdf-export-page .pdf-placeholder-hidden::before,
+.pdf-export-page .pdf-placeholder-hidden::after {
+	display: none !important;
 }
 
 

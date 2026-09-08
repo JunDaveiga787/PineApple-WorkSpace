@@ -185,6 +185,9 @@
             exportPage.style.height = 'auto';
             exportPage.style.margin = '0';
             exportPage.classList.add('pdf-export-page');
+            exportPage.querySelectorAll('[data-placeholder]').forEach(cell => {
+                cell.classList.add('pdf-placeholder-hidden');
+            });
             exportPage.querySelectorAll('.delete-btn').forEach(button => button.remove());
             exportPage.querySelectorAll('#table-body tr').forEach(row => {
                 const description = row.querySelector('td:first-child').textContent.trim();
