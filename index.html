@@ -336,6 +336,79 @@
             'Cinta de montaje exterior',
             'Cinta vulcanizada',
             'Cinta reflectiva amarilla',
+            'Tape 3M adhesivo',
+            'Tape Scotch adhesivo',
+            'Tape Tesa adhesivo',
+            'Tape Nashua adhesivo',
+            'Tape Gorilla adhesivo',
+            'Tape de ducto 3M',
+            'Tape de ducto Scotch',
+            'Tape de enmascarar 3M',
+            'Tape de enmascarar Frogtape',
+            'Tape de doble cara 3M',
+            'Tape de doble cara Tesa',
+            'Tape aislante 3M',
+            'Tape aislante Tesa',
+            'Tape adhesivo 3M',
+            'Tape reflectivo 3M',
+            'Cinta adhesiva 3M 1/2 pulgada',
+            'Cinta adhesiva 3M 1 pulgada',
+            'Cinta adhesiva Scotch 1/2 pulgada',
+            'Cinta adhesiva Scotch 1 pulgada',
+            'Cinta aislante 3M 19 mm',
+            'Cinta aislante Tesa 19 mm',
+            'Cinta aislante Nashua 19 mm',
+            'Cinta aislante premium 3M 25 mm',
+            'Cinta aislante premium Tesa 25 mm',
+            'Cinta eléctrica 3M 19 mm',
+            'Cinta eléctrica Scotch 19 mm',
+            'Cinta eléctrica Tesa 19 mm',
+            'Cinta de enmascarar 3M 1.5 pulgadas',
+            'Cinta de enmascarar Frogtape 1.5 pulgadas',
+            'Cinta de enmascarar Tesa 1.5 pulgadas',
+            'Cinta de doble cara 3M VHB 1/2',
+            'Cinta de doble cara 3M VHB 1',
+            'Cinta de doble cara Tesa 1/2',
+            'Cinta de doble cara Tesa 1',
+            'Cinta de doble cara Gorilla 1/2',
+            'Cinta de doble cara Gorilla 1',
+            'Cinta de montaje 3M 24 mm',
+            'Cinta de montaje Tesa 24 mm',
+            'Cinta de montaje Nashua 24 mm',
+            'Cinta de aluminio 3M 2 pulgadas',
+            'Cinta de aluminio Tesa 2 pulgadas',
+            'Cinta de aluminio Nashua 2 pulgadas',
+            'Cinta de ducto 3M',
+            'Cinta de ducto Nashua',
+            'Cinta de ducto Tesa',
+            'Cinta teflón 3M 1/2',
+            'Cinta teflón 3M 3/4',
+            'Cinta teflón Teflon 1/2',
+            'Cinta teflón Teflon 3/4',
+            'Cinta de fibra de vidrio 3M',
+            'Cinta de fibra de vidrio Tesa',
+            'Cinta de fibra de vidrio Nashua',
+            'Cinta de sellado de PVC 3M',
+            'Cinta de sellado de PVC Tesa',
+            'Cinta auto adherible 3M',
+            'Cinta auto adherible Tesa',
+            'Cinta alta temperatura 3M',
+            'Cinta alta temperatura Tesa',
+            'Cinta alta temperatura Gorilla',
+            'Cinta de silicona 3M',
+            'Cinta de silicona Tesa',
+            'Cinta de silicona premium',
+            'Cinta de reparación Flex Tape',
+            'Cinta de reparación Heavy Duty Flex Tape',
+            'Cinta de reparación Rubberized Flex Tape',
+            'Cinta de reparación instantánea 3M',
+            'Cinta de reparación instantánea Tesa',
+            'Cinta de seguridad 3M',
+            'Cinta de seguridad Tesa',
+            'Cinta de seguridad Nashua',
+            'Cinta reflectiva 3M',
+            'Cinta reflectiva Tesa',
+            'Cinta reflectiva Nashua',
             'Canaleta plástica 1 pulgada',
             'Canaleta plástica 2 pulgadas',
             'Canaleta plástica 3 pulgadas',
@@ -2968,6 +3041,7 @@
             'Servicio técnico para oficina',
             'Visita de emergencia a domicilio',
             'Diagnóstico con informe técnico',
+            'Mano de obra',
             'Mano de obra por hora',
             'Mano de obra por día',
             'Mano de obra de ayudante',
@@ -2983,6 +3057,7 @@
         document.body.appendChild(suggestionsBox);
 
         let activeSuggestionCell = null;
+        let suggestionIndex = -1;
 
         function isDescriptionCell(cell) {
             return cell.matches('td:first-child[contenteditable="true"]');
@@ -3006,25 +3081,100 @@
             suggestionsBox.style.display = 'none';
             suggestionsBox.innerHTML = '';
             activeSuggestionCell = null;
+            suggestionIndex = -1;
         }
 
-        function normalizeSearchText(text) {
+        function normalizeSearchText(text = '') {
             return text
                 .toLowerCase()
                 .normalize('NFD')
-                .replace(/[\u0300-\u036f]/g, '');
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^a-z0-9]+/g, ' ')
+                .trim();
+        }
+
+        function getSmartSuggestions(query, products) {
+            const normalizedQuery = normalizeSearchText(query);
+            if (!normalizedQuery) return [];
+
+            const queryTokens = normalizedQuery.split(/\s+/).filter(Boolean);
+            const queryWords = [...new Set(queryTokens)];
+            const spellMap = {
+                inv: 'inversor',
+                invers: 'inversor',
+                bat: 'bateria',
+                bater: 'bateria',
+                serv: 'servicio',
+                inst: 'instalacion',
+                cable: 'cable',
+                sw: 'switch',
+                brk: 'breaker',
+                llav: 'llave',
+                tab: 'tablero',
+                mot: 'motor'
+            };
+
+            return products
+                .map(product => {
+                    const normalizedProduct = normalizeSearchText(product);
+                    const productTokens = normalizedProduct.split(/\s+/).filter(Boolean);
+                    let score = 0;
+
+                    if (normalizedProduct === normalizedQuery) score += 1000;
+                    if (normalizedProduct.startsWith(normalizedQuery)) score += 260;
+                    if (normalizedProduct.includes(normalizedQuery)) score += 120;
+
+                    const matchedWords = queryWords.filter(word => {
+                        const wordExpanded = spellMap[word] || word;
+                        return normalizedProduct.includes(wordExpanded) || productTokens.some(token => token.startsWith(word) || token.startsWith(wordExpanded));
+                    }).length;
+                    score += matchedWords * 42;
+
+                    const allTokensPresent = queryWords.every(word => {
+                        const expandedWord = spellMap[word] || word;
+                        return normalizedProduct.includes(expandedWord) || productTokens.some(token => token.includes(expandedWord));
+                    });
+                    if (allTokensPresent) score += 80;
+
+                    const prefixBonus = queryWords.filter(word => {
+                        const expandedWord = spellMap[word] || word;
+                        return productTokens.some(token => token.startsWith(expandedWord));
+                    }).length;
+                    score += prefixBonus * 30;
+
+                    score += Math.max(0, 55 - Math.abs(normalizedQuery.length - normalizedProduct.length));
+
+                    if (score > 0) {
+                        return { product, score };
+                    }
+
+                    return null;
+                })
+                .filter(Boolean)
+                .sort((a, b) => b.score - a.score)
+                .slice(0, 8)
+                .map(item => item.product);
+        }
+
+        function selectSuggestion(product) {
+            if (!activeSuggestionCell) return;
+
+            activeSuggestionCell.innerText = product;
+            activeSuggestionCell.focus();
+
+            const selection = window.getSelection();
+            const range = document.createRange();
+            range.selectNodeContents(activeSuggestionCell);
+            range.collapse(false);
+            selection.removeAllRanges();
+            selection.addRange(range);
+
+            hideProductSuggestions();
         }
 
         function showProductSuggestions(cell) {
-            const query = normalizeSearchText(cell.innerText.trim());
-            if (!query) {
-                hideProductSuggestions();
-                return;
-            }
-
-            const matches = productCatalog
-                .filter(product => normalizeSearchText(product).includes(query))
-                .slice(0, 8);
+            const query = cell.innerText.trim();
+            const matches = getSmartSuggestions(query, productCatalog);
 
             if (!matches.length) {
                 hideProductSuggestions();
@@ -3032,8 +3182,9 @@
             }
 
             activeSuggestionCell = cell;
-            suggestionsBox.innerHTML = matches.map(product =>
-                `<button class="product-suggestion" type="button" role="option">${product}</button>`
+            suggestionIndex = -1;
+            suggestionsBox.innerHTML = matches.map((product, index) =>
+                `<button class="product-suggestion${index === 0 ? ' is-selected' : ''}" type="button" role="option" data-product="${product}">${product}</button>`
             ).join('');
 
             suggestionsBox.style.display = 'block';
@@ -3051,18 +3202,8 @@
             if (!suggestion) return;
 
             event.preventDefault();
-            const activeCell = document.querySelector('td.is-editing');
-            if (activeCell) {
-                activeCell.innerText = suggestion.innerText;
-                activeCell.focus();
-                const selection = window.getSelection();
-                const range = document.createRange();
-                range.selectNodeContents(activeCell);
-                range.collapse(false);
-                selection.removeAllRanges();
-                selection.addRange(range);
-            }
-            hideProductSuggestions();
+            const product = suggestion.getAttribute('data-product') || suggestion.innerText.trim();
+            selectSuggestion(product);
         });
 
         document.addEventListener('click', function (event) {
@@ -3086,6 +3227,35 @@
         document.addEventListener('keydown', function (event) {
             if ((event.ctrlKey || event.metaKey) && ['+', '=', '-', '_', '0'].includes(event.key)) {
                 event.preventDefault();
+            }
+
+            const options = [...document.querySelectorAll('.product-suggestion')];
+            if (!options.length || !activeSuggestionCell) return;
+
+            if (event.key === 'ArrowDown') {
+                event.preventDefault();
+                suggestionIndex = suggestionIndex >= options.length - 1 ? 0 : suggestionIndex + 1;
+                options.forEach((option, index) => option.classList.toggle('is-selected', index === suggestionIndex));
+                options[suggestionIndex].focus();
+            }
+
+            if (event.key === 'ArrowUp') {
+                event.preventDefault();
+                suggestionIndex = suggestionIndex <= 0 ? options.length - 1 : suggestionIndex - 1;
+                options.forEach((option, index) => option.classList.toggle('is-selected', index === suggestionIndex));
+                options[suggestionIndex].focus();
+            }
+
+            if (event.key === 'Enter' || event.key === 'Tab') {
+                if (suggestionIndex >= 0 && options[suggestionIndex]) {
+                    event.preventDefault();
+                    const selectedProduct = options[suggestionIndex].getAttribute('data-product') || options[suggestionIndex].innerText.trim();
+                    selectSuggestion(selectedProduct);
+                }
+            }
+
+            if (event.key === 'Escape') {
+                hideProductSuggestions();
             }
         });
 

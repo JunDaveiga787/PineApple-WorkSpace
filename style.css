@@ -383,14 +383,15 @@ button,
 }
 
 .product-suggestion:hover,
-.product-suggestion:focus-visible {
-	background: linear-gradient(135deg, rgba(168, 85, 247, 0.10), rgba(59, 130, 246, 0.08));
+.product-suggestion:focus-visible,
+.product-suggestion.is-selected {
+	background: linear-gradient(135deg, rgba(168, 85, 247, 0.14), rgba(59, 130, 246, 0.10));
 	outline: none;
 	transform: translateX(1px);
 }
 
 .product-suggestion:active {
-	background: rgba(168, 85, 247, 0.14);
+	background: rgba(168, 85, 247, 0.18);
 }
 
 .items-table td:nth-child(2)[contenteditable="true"]:empty::before {
@@ -929,6 +930,71 @@ button,
 
 
 /* ELIMINAR LA SEGUNDA PAGINA AL IMPRIMIR */
+
+@media print {
+	@page {
+		margin: 5mm;
+		size: portrait;
+	}
+
+	html, body {
+		width: 100%;
+		height: auto !important;
+		min-height: 0 !important;
+		margin: 0 !important;
+		padding: 0 !important;
+		background: white !important;
+		overflow: visible !important;
+	}
+
+	.controls {
+		display: none !important;
+	}
+
+	.items-table th:last-child,
+	.items-table td:last-child {
+		display: none;
+	}
+
+	.meta-label,
+	.meta-value,
+	.items-table th,
+	.items-table td {
+		color: #1d1d1f !important;
+		-webkit-print-color-adjust: exact;
+		print-color-adjust: exact;
+	}
+
+	.page {
+		position: relative;
+		width: 100% !important;
+		height: auto !important;
+		min-height: 0 !important;
+		max-height: none !important;
+		margin: 0 !important;
+		padding: 15px !important;
+		border-radius: 0 !important;
+		box-shadow: none !important;
+		overflow: visible !important;
+		page-break-after: avoid !important;
+		break-after: avoid !important;
+	}
+
+	.items-table,
+	.totals-section,
+	.footer {
+		page-break-inside: avoid;
+		break-inside: avoid;
+	}
+
+	[contenteditable="true"] {
+		box-shadow: none !important;
+		background: transparent !important;
+	}
+}
+
+
+/* eliminar la segunda pagina al imprimir*/
 
 @media print {
 	@page {
