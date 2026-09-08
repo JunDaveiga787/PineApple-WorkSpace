@@ -19,7 +19,7 @@
                 <button class="btn" type="button" onclick="toggleExportMenu()" aria-expanded="false" aria-controls="export-menu"><span aria-hidden="true">↗</span> Exportar PDF</button>
                 <div class="export-menu" id="export-menu" hidden>
                     <button type="button" onclick="downloadPdf()"><span aria-hidden="true">↓</span> Descargar PDF</button>
-                    <button type="button" onclick="openWhatsappDialog()"><span aria-hidden="true">◉</span> Compartir por WhatsApp</button>
+                    <button type="button" onclick="openWhatsappDialog()"><span aria-hidden="true">◉</span> Compartir PDF por WhatsApp</button>
                 </div>
             </div>
         </div>
@@ -28,10 +28,10 @@
     <dialog class="whatsapp-dialog" id="whatsapp-dialog">
         <form method="dialog" onsubmit="shareOnWhatsapp(event)">
             <button class="dialog-close" type="button" onclick="closeWhatsappDialog()" aria-label="Cerrar">&times;</button>
-            <h2>Compartir por WhatsApp</h2>
-            <p>Escribe el número con código de país, sin espacios ni el signo +.</p>
+            <h2>Compartir PDF por WhatsApp</h2>
+            <p>Se generará el PDF y se abrirá el panel de compartir del teléfono. Luego elige WhatsApp y el contacto.</p>
             <label for="whatsapp-number">Número de WhatsApp</label>
-            <input id="whatsapp-number" name="whatsapp-number" type="tel" inputmode="numeric" autocomplete="tel" placeholder="18095551234" required>
+            <input id="whatsapp-number" name="whatsapp-number" type="tel" inputmode="numeric" autocomplete="tel" placeholder="18095551234">
             <div class="dialog-actions">
                 <button class="btn btn-secondary" type="button" onclick="closeWhatsappDialog()">Cancelar</button>
                 <button class="btn" type="submit">Abrir WhatsApp</button>
@@ -150,6 +150,8 @@
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
         function parseVal(str) {
             if (!str) return 0;
@@ -182,9 +184,50 @@
             button.setAttribute('aria-expanded', 'false');
         }
 
-        function downloadPdf() {
+        async function createPdfFile() {
+            const page = document.querySelector('.page');
+            const canvas = await html2canvas(page, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#ffffff',
+                logging: false
+            });
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const pageWidth = 210;
+            const pageHeight = 297;
+            const imageWidth = pageWidth;
+            const imageHeight = (canvas.height * imageWidth) / canvas.width;
+            const imageData = canvas.toDataURL('image/jpeg', 0.94);
+            let remainingHeight = imageHeight;
+            let position = 0;
+
+            pdf.addImage(imageData, 'JPEG', 0, position, imageWidth, imageHeight);
+            remainingHeight -= pageHeight;
+
+            while (remainingHeight > 0) {
+                position -= pageHeight;
+                pdf.addPage();
+                pdf.addImage(imageData, 'JPEG', 0, position, imageWidth, imageHeight);
+                remainingHeight -= pageHeight;
+            }
+
+            return pdf.output('blob');
+        }
+
+        async function downloadPdf() {
             closeExportMenu();
-            window.print();
+            try {
+                const pdfBlob = await createPdfFile();
+                const downloadUrl = URL.createObjectURL(pdfBlob);
+                const link = document.createElement('a');
+                link.href = downloadUrl;
+                link.download = 'cotizacion-pineapple.pdf';
+                link.click();
+                URL.revokeObjectURL(downloadUrl);
+            } catch (error) {
+                window.print();
+            }
         }
 
         function openWhatsappDialog() {
@@ -228,15 +271,42 @@
             return `Hola, te comparto esta ${documentType.toLowerCase()} de PineApple Multiservice.${client ? `\nCliente: ${client}` : ''}${rows.length ? `\n\n${rows.join('\n')}` : ''}\n\nTotal: ${total}`;
         }
 
-        function shareOnWhatsapp(event) {
+        async function shareOnWhatsapp(event) {
             event.preventDefault();
             const number = document.getElementById('whatsapp-number').value.replace(/\D/g, '');
 
-            if (!number) return;
+            try {
+                const pdfBlob = await createPdfFile();
+                const pdfFile = new File([pdfBlob], 'cotizacion-pineapple.pdf', { type: 'application/pdf' });
+                const message = getWhatsappMessage();
 
-            const whatsappUrl = `https://wa.me/${number}?text=${encodeURIComponent(getWhatsappMessage())}`;
-            closeWhatsappDialog();
-            window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+                if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+                    closeWhatsappDialog();
+                    await navigator.share({
+                        files: [pdfFile],
+                        title: 'Cotización PineApple',
+                        text: message
+                    });
+                    return;
+                }
+
+                const downloadUrl = URL.createObjectURL(pdfBlob);
+                const link = document.createElement('a');
+                link.href = downloadUrl;
+                link.download = 'cotizacion-pineapple.pdf';
+                link.click();
+                URL.revokeObjectURL(downloadUrl);
+
+                const whatsappUrl = number
+                    ? `https://wa.me/${number}?text=${encodeURIComponent(message)}`
+                    : `https://wa.me/?text=${encodeURIComponent(message)}`;
+                closeWhatsappDialog();
+                window.location.href = whatsappUrl;
+            } catch (error) {
+                if (error.name !== 'AbortError') {
+                    window.alert('No se pudo generar el PDF. Intenta nuevamente.');
+                }
+            }
         }
 
         function recalc(elem) {
