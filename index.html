@@ -11,7 +11,7 @@
     <link rel="icon" type="image/png" sizes="512x512" href="https://res.cloudinary.com/nox-company/image/upload/v1788821914/PineApple%20Service%20Media/ChatGPT_Image_Sep_7_2026_06_30_53_PM-Photoroom_tip3f5.png?v=19">
     <link rel="apple-touch-icon" sizes="512x512" href="https://res.cloudinary.com/nox-company/image/upload/v1788821914/PineApple%20Service%20Media/ChatGPT_Image_Sep_7_2026_06_30_53_PM-Photoroom_tip3f5.png?v=19">
     <title>Work Center | PineApple Multiservice</title>
-    <link rel="stylesheet" href="style.css?v=19">
+    <link rel="stylesheet" href="style.css?v=20">
 </head>
 <body>
 
@@ -82,10 +82,10 @@
                         <span class="meta-value" contenteditable="true">22/07/2026</span>
                         
                         <span class="meta-label">Cliente:</span>
-                        <span class="meta-value" contenteditable="true">RES. CLAUDETTE</span>
+                        <span class="meta-value client-picker" contenteditable="true" data-client-field="true" role="combobox" aria-autocomplete="list" aria-expanded="false">Cinthia</span>
                         
                         <span class="meta-label">ID Cliente:</span>
-                        <span class="meta-value" contenteditable="true">@01</span>
+                        <span class="meta-value client-id" contenteditable="true" data-client-id-field="true">@01</span>
                     </div>
                 </div>
             </div>
@@ -188,6 +188,12 @@
             const codeInput = document.getElementById('editor-access-code');
             const error = document.getElementById('editor-access-error');
             const dots = document.querySelector('.passcode-dots');
+            const accessKey = 'pineappleEditorUnlocked';
+
+            if (localStorage.getItem(accessKey) === 'true') {
+                unlockEditor();
+                return;
+            }
 
             function updateCodeDots() {
                 dots.innerHTML = '';
@@ -228,6 +234,7 @@
                     codeInput.focus();
                     return;
                 }
+                localStorage.setItem(accessKey, 'true');
                 unlockEditor();
             });
         }
@@ -1826,11 +1833,12 @@
             'Abrazadera de reparación para fugas',
             'Soporte para tubería PVC',
             'Gancho para tubería',
+            'Tubo PVC',
             'Tubo PVC 1/2 pulgada x 6 metros',
             'Tubo PVC 3/4 pulgada x 6 metros',
             'Tubo PVC 1 pulgada x 6 metros',
             'Tubo PVC 2 pulgadas x 6 metros',
-            'Tubo CPVC 1/2 pulgada x 3 metros',
+            'Tubo PVC 1/2 pulgada x 3 metros',
             'Tubo PPR 1/2 pulgada x 4 metros',
             'Tubo PPR 3/4 pulgada x 4 metros',
             'Tubo flexible para agua',
@@ -3294,13 +3302,88 @@
 
         productCatalog.push(...storeCatalog);
 
+        const learnedProductsKey = 'pineappleLearnedProducts';
+        let learnedProducts = [];
+
+        try {
+            const savedProducts = JSON.parse(localStorage.getItem(learnedProductsKey) || '[]');
+            if (Array.isArray(savedProducts)) {
+                learnedProducts = savedProducts.filter(product => typeof product === 'string' && product.trim());
+            }
+        } catch (error) {
+            localStorage.removeItem(learnedProductsKey);
+        }
+
+        productCatalog.push(...learnedProducts);
+
         const suggestionsBox = document.createElement('div');
         suggestionsBox.className = 'product-suggestions';
         suggestionsBox.setAttribute('role', 'listbox');
         document.body.appendChild(suggestionsBox);
 
+        /*clientes*/ /*clientes*/ /*clientes*/
+        /*clientes*/ /*clientes*/ /*clientes*/
+        /*clientes*/ /*clientes*/ /*clientes*/
+        /*clientes*/ /*clientes*/ /*clientes*/
+        /*clientes*/ /*clientes*/ /*clientes*/
+        /*clientes*/ /*clientes*/ /*clientes*/
+        /*clientes*/ /*clientes*/ /*clientes*/
+        /*clientes*/ /*clientes*/ /*clientes*/
+        /*clientes*/ /*clientes*/ /*clientes*/
+        /*clientes*/ /*clientes*/ /*clientes*/
+        /*clientes*/ /*clientes*/ /*clientes*/
+        /*clientes*/ /*clientes*/ /*clientes*/
+        /*clientes*/ /*clientes*/ /*clientes*/
+        /*clientes*/ /*clientes*/ /*clientes*/
+        const clientCatalog = [
+            { name: 'Cinthia', id: '@01' },
+            { name: 'Walkiria', id: '@02' },
+            { name: 'Equiproci', id: '@03' },
+            { name: 'Kenny', id: '@04' },
+            { name: 'Luis', id: '@05' },
+            { name: 'Mark', id: '@01' },
+            { name: 'Andres (Rudy 11)', id: '@07' },
+            { name: 'Doctor Corccino (CoopUno)', id: '@08' },
+            { name: 'Susana', id: '@09' },
+            { name: 'Hermana del ingeniero Felix', id: '@10' },
+            { name: 'Jose (Max Caribe)', id: '@11' },
+            { name: 'Danilo', id: '@12' },
+            { name: 'Carlos', id: '@13' },
+            { name: 'Miky', id: '@14' },
+            { name: 'Lizardo', id: '@15' },
+            { name: 'Hermana de Marlenys', id: '@16' },
+            { name: 'Yvana', id: '@17' },
+            { name: 'Jonny', id: '@18' },
+            { name: 'Dental Cibao', id: '@19' },
+            { name: 'Enrique', id: '@20' },
+            { name: 'Jose Genao', id: '@21' },
+            { name: 'Manuela (Green Tower)', id: '@22' },
+            { name: 'Remy', id: '@23' },
+            { name: 'Eliazar (Los perez)', id: '@24' },
+            { name: 'Marcial (Max Caribe)', id: '@25' },
+            { name: 'Valery Vital / Los Alamos', id: '@26' },
+            { name: 'Res. Don Carlos', id: '@27' },
+            { name: 'Res. Francibell', id: '@28' },
+            { name: 'Res. Ariel', id: '@29' },
+            { name: 'Res. Don Imperial', id: '@30' },
+            { name: 'Res. Los Collados', id: '@31' },
+            { name: 'Res. Don Carlos', id: '@32' },
+            { name: 'Res. Rudy 17', id: '@33' },
+            { name: 'Res. Amanda Luz', id: '@34' },
+            { name: 'Res. Flager', id: '@35' },
+            { name: 'Res. Green Tower', id: '@36' },
+            { name: 'Res. Claudette', id: '@37' },
+
+        ];
+        const clientSuggestionsBox = document.createElement('div');
+        clientSuggestionsBox.className = 'client-suggestions';
+        clientSuggestionsBox.setAttribute('role', 'listbox');
+        document.body.appendChild(clientSuggestionsBox);
+
         let activeSuggestionCell = null;
         let suggestionIndex = -1;
+        let activeClientField = null;
+        let clientSuggestionIndex = -1;
 
         function isDescriptionCell(cell) {
             return cell.matches('td:first-child[contenteditable="true"]');
@@ -3327,6 +3410,68 @@
             suggestionIndex = -1;
         }
 
+        function hideClientSuggestions() {
+            clientSuggestionsBox.style.display = 'none';
+            clientSuggestionsBox.innerHTML = '';
+            if (activeClientField) activeClientField.setAttribute('aria-expanded', 'false');
+            activeClientField = null;
+            clientSuggestionIndex = -1;
+        }
+
+        function getClientSuggestions(query) {
+            const normalizedQuery = normalizeSearchText(query);
+            if (!normalizedQuery) return clientCatalog;
+
+            return clientCatalog.filter(client =>
+                normalizeSearchText(client.name).includes(normalizedQuery) ||
+                normalizeSearchText(client.id).includes(normalizedQuery)
+            );
+        }
+
+        function selectClient(client) {
+            if (!activeClientField) return;
+
+            activeClientField.innerText = client.name;
+            document.querySelector('[data-client-id-field="true"]').innerText = client.id;
+            activeClientField.focus();
+            const selection = window.getSelection();
+            const range = document.createRange();
+            range.selectNodeContents(activeClientField);
+            range.collapse(false);
+            selection.removeAllRanges();
+            selection.addRange(range);
+            hideClientSuggestions();
+        }
+
+        function showClientSuggestions(field) {
+            const matches = getClientSuggestions(field.innerText.trim());
+            if (!matches.length) {
+                hideClientSuggestions();
+                return;
+            }
+
+            activeClientField = field;
+            clientSuggestionIndex = 0;
+            clientSuggestionsBox.innerHTML = matches.map((client, index) => `
+                <button class="client-suggestion${index === 0 ? ' is-selected' : ''}" type="button" role="option" data-client-name="${client.name}" data-client-id="${client.id}">
+                    <span>${client.name}</span><span class="client-suggestion-id">${client.id}</span>
+                </button>
+            `).join('');
+            clientSuggestionsBox.style.display = 'block';
+            field.setAttribute('aria-expanded', 'true');
+            positionSuggestionsBoxFor(field, clientSuggestionsBox);
+        }
+
+        function positionSuggestionsBoxFor(field, box) {
+            const bounds = field.getBoundingClientRect();
+            const width = Math.max(bounds.width, 230);
+            const maxLeft = Math.max(12, window.innerWidth - width - 12);
+            const left = Math.min(Math.max(12, bounds.left), maxLeft);
+            box.style.left = `${left}px`;
+            box.style.top = `${window.scrollY + bounds.bottom + 8}px`;
+            box.style.width = `${width}px`;
+        }
+
         function normalizeSearchText(text = '') {
             return text
                 .toLowerCase()
@@ -3336,7 +3481,7 @@
                 .trim();
         }
 
-            const suggestionIndexCache = productCatalog.map(product => ({
+            let suggestionIndexCache = productCatalog.map(product => ({
                 product,
                 normalized: normalizeSearchText(product),
                 tokens: normalizeSearchText(product).split(/\s+/).filter(Boolean)
@@ -3348,6 +3493,26 @@
             } catch (error) {
                 localStorage.removeItem('pineappleSuggestionUsage');
             }
+
+        function rememberProduct(product) {
+            const cleanProduct = product.replace(/\s+/g, ' ').trim();
+            const normalizedProduct = normalizeSearchText(cleanProduct);
+            if (normalizedProduct.length < 3) return;
+
+            const existsInCatalog = suggestionIndexCache.some(item => item.normalized === normalizedProduct);
+            if (existsInCatalog) return;
+
+            learnedProducts.push(cleanProduct);
+            productCatalog.push(cleanProduct);
+            localStorage.setItem(learnedProductsKey, JSON.stringify(learnedProducts));
+
+            suggestionIndexCache = productCatalog.map(catalogProduct => ({
+                product: catalogProduct,
+                normalized: normalizeSearchText(catalogProduct),
+                tokens: normalizeSearchText(catalogProduct).split(/\s+/).filter(Boolean)
+            }));
+            suggestionCache.clear();
+        }
 
         function editDistanceWithinLimit(first, second, limit) {
             if (Math.abs(first.length - second.length) > limit) return limit + 1;
@@ -3491,6 +3656,27 @@
             if (isDescriptionCell(event.target)) {
                 showProductSuggestions(event.target);
             }
+
+            if (event.target.matches('[data-client-field="true"]')) {
+                showClientSuggestions(event.target);
+            }
+        });
+
+        document.addEventListener('focusin', function (event) {
+            if (event.target.matches('[data-client-field="true"]')) {
+                showClientSuggestions(event.target);
+            }
+        });
+
+        document.addEventListener('mousedown', function (event) {
+            const suggestion = event.target.closest('.client-suggestion');
+            if (!suggestion) return;
+
+            event.preventDefault();
+            selectClient({
+                name: suggestion.getAttribute('data-client-name'),
+                id: suggestion.getAttribute('data-client-id')
+            });
         });
 
         document.addEventListener('mousedown', function (event) {
@@ -3506,17 +3692,58 @@
             if (!event.target.closest('.product-suggestions')) {
                 hideProductSuggestions();
             }
+
+            if (!event.target.closest('.client-suggestions') && !event.target.closest('[data-client-field="true"]')) {
+                hideClientSuggestions();
+            }
         });
 
         window.addEventListener('scroll', function () {
             if (suggestionsBox.style.display === 'block' && activeSuggestionCell) {
                 positionSuggestionsBox(activeSuggestionCell);
             }
+
+            if (clientSuggestionsBox.style.display === 'block' && activeClientField) {
+                positionSuggestionsBoxFor(activeClientField, clientSuggestionsBox);
+            }
         }, { passive: true });
 
         window.addEventListener('resize', function () {
             if (suggestionsBox.style.display === 'block' && activeSuggestionCell) {
                 positionSuggestionsBox(activeSuggestionCell);
+            }
+
+            if (clientSuggestionsBox.style.display === 'block' && activeClientField) {
+                positionSuggestionsBoxFor(activeClientField, clientSuggestionsBox);
+            }
+        });
+
+        document.addEventListener('keydown', function (event) {
+            if (!activeClientField) return;
+
+            const options = [...clientSuggestionsBox.querySelectorAll('.client-suggestion')];
+            if (!options.length) return;
+
+            if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+                event.preventDefault();
+                const direction = event.key === 'ArrowDown' ? 1 : -1;
+                clientSuggestionIndex = (clientSuggestionIndex + direction + options.length) % options.length;
+                options.forEach((option, index) => option.classList.toggle('is-selected', index === clientSuggestionIndex));
+                options[clientSuggestionIndex].focus();
+            }
+
+            if (event.key === 'Enter' || event.key === 'Tab') {
+                const selectedOption = options[clientSuggestionIndex];
+                if (!selectedOption) return;
+                event.preventDefault();
+                selectClient({
+                    name: selectedOption.getAttribute('data-client-name'),
+                    id: selectedOption.getAttribute('data-client-id')
+                });
+            }
+
+            if (event.key === 'Escape') {
+                hideClientSuggestions();
             }
         });
 
@@ -3571,6 +3798,10 @@
             if (event.target.matches('[contenteditable="true"][data-placeholder]')) {
                 event.target.classList.remove('is-editing');
             }
+
+            if (isDescriptionCell(event.target)) {
+                rememberProduct(event.target.innerText);
+            }
         });
 
         ['gesturestart', 'gesturechange', 'gestureend'].forEach(function (eventName) {
@@ -3593,7 +3824,7 @@
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function () {
-                navigator.serviceWorker.register('./sw.js?v=18');
+                navigator.serviceWorker.register('./sw.js?v=22');
             });
         }
     </script>
