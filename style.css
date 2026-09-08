@@ -887,16 +887,41 @@ button,
 	.page {
 		position: relative;
 		width: 100% !important;
-		height: auto !important;
+		height: 100vh !important;
 		min-height: 0 !important;
-		max-height: none !important;
+		max-height: 100vh !important;
 		margin: 0 !important;
-		padding: 15px !important;
+		padding: 10px !important;
 		border-radius: 0 !important;
 		box-shadow: none !important;
-		overflow: visible !important;
+		overflow: hidden !important;
 		page-break-after: avoid !important;
 		break-after: avoid !important;
+	}
+
+	.header {
+		margin-bottom: 28px !important;
+	}
+
+	.divider {
+		margin-bottom: 20px !important;
+	}
+
+	.items-table th {
+		padding-bottom: 8px !important;
+	}
+
+	.items-table td {
+		padding-top: 10px !important;
+		padding-bottom: 10px !important;
+	}
+
+	.table-scroll {
+		margin-bottom: 18px !important;
+	}
+
+	.totals-section {
+		margin-bottom: 20px !important;
 	}
 
 	.items-table,
@@ -908,13 +933,13 @@ button,
 
 	.footer {
 		position: static;
-		margin-top: -18px !important;
-		padding-top: 16px !important;
+		margin-top: 0 !important;
+		padding-top: 12px !important;
 	}
 
 	.qr-img {
-		width: 58px !important;
-		height: 58px !important;
+		width: 46px !important;
+		height: 46px !important;
 		flex-shrink: 0;
 	}
 
@@ -925,67 +950,3 @@ button,
 }
 
 
-
-/*************************/
-
-@media print {
-	@page {
-		margin: 5mm;
-		size: portrait;
-	}
-
-	html, body {
-		width: 100%;
-		height: auto !important;
-		min-height: 0 !important;
-		margin: 0 !important;
-		padding: 0 !important;
-		background: white !important;
-		overflow: visible !important;
-	}
-
-	.controls {
-		display: none !important;
-	}
-
-	.items-table th:last-child,
-	.items-table td:last-child {
-		display: none;
-	}
-
-	.meta-label,
-	.meta-value,
-	.items-table th,
-	.items-table td {
-		color: #1d1d1f !important;
-		-webkit-print-color-adjust: exact;
-		print-color-adjust: exact;
-	}
-
-	.page {
-		position: relative;
-		width: 100% !important;
-		height: auto !important;
-		min-height: 0 !important;
-		max-height: none !important;
-		margin: 0 !important;
-		padding: 15px !important;
-		border-radius: 0 !important;
-		box-shadow: none !important;
-		overflow: visible !important;
-		page-break-after: avoid !important;
-		break-after: avoid !important;
-	}
-
-	.items-table,
-	.totals-section,
-	.footer {
-		page-break-inside: avoid;
-		break-inside: avoid;
-	}
-
-	[contenteditable="true"] {
-		box-shadow: none !important;
-		background: transparent !important;
-	}
-}
