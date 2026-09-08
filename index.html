@@ -3827,6 +3827,33 @@
                 navigator.serviceWorker.register('./sw.js?v=22');
             });
         }
+
+
+
+
+        /* funcionamiento en median.co APP*/
+
+        function compartirContenido() {
+  // 1. Detectar si estamos dentro de la app de Median.co (antes GoNative)
+  if (typeof median !== 'undefined' && median.share) {
+    // Llama al menú de compartir nativo de iOS/Android
+    median.share.sharePage();
+    
+    // Opcional: Si quieres compartir un texto o URL específico en lugar de la página actual, usa:
+    // median.share.shareData({ url: 'https://tusitio.com', text: 'Mira esto' });
+  } 
+  // 2. Si no es la app, intentar usar la API estándar de navegadores móviles
+  else if (navigator.share) {
+    navigator.share({
+      title: document.title,
+      url: window.location.href
+    }).catch(console.error);
+  } 
+  // 3. Fallback si estás en una computadora de escritorio
+  else {
+    alert("Tu navegador actual no soporta la función de compartir.");
+  }
+}
     </script>
 </body>
 </html>
