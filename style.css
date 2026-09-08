@@ -266,7 +266,8 @@ button,
 
 .items-table {
 	width: 100%;
-	min-width: 560px;
+	min-width: 0;
+	table-layout: fixed;
 	border-collapse: collapse;
 }
 
@@ -559,6 +560,46 @@ button,
 	}
 }
 
+@media (max-width: 680px) {
+	body {
+		padding-right: 12px;
+		padding-left: 12px;
+	}
+
+	.page {
+		padding-right: 28px;
+		padding-left: 28px;
+	}
+
+	.header {
+		gap: 22px;
+	}
+
+	.items-table th,
+	.items-table td {
+		padding-right: 4px;
+		padding-left: 4px;
+		overflow-wrap: anywhere;
+		word-break: break-word;
+	}
+
+	.items-table th:first-child { width: 35%; }
+	.items-table th:nth-child(2) { width: 12%; }
+	.items-table th:nth-child(3) { width: 22%; }
+	.items-table th:nth-child(4) { width: 22%; }
+	.items-table th:last-child { width: 9%; }
+
+	.items-table th {
+		font-size: 8px;
+		line-height: 1.25;
+	}
+
+	.items-table td {
+		font-size: 11px;
+		line-height: 1.3;
+	}
+}
+
 @media (max-width: 760px) {
 	body {
 		padding: 12px 8px 32px;
@@ -617,7 +658,7 @@ button,
 
 	.items-table {
 		table-layout: fixed;
-		min-width: 440px;
+		min-width: 0;
 		margin-bottom: 0;
 	}
 
@@ -757,7 +798,7 @@ button,
 	}
 
 	.items-table {
-		min-width: 360px;
+		min-width: 0;
 	}
 
 	.items-table th,
@@ -834,7 +875,7 @@ button,
 	}
 
 	.items-table {
-		min-width: 390px;
+		min-width: 0;
 	}
 
 	.items-table th,
@@ -848,9 +889,35 @@ button,
 	}
 }
 
+@media (max-width: 340px) {
+	.page {
+		padding-right: 9px;
+		padding-left: 9px;
+	}
+
+	.items-table th,
+	.items-table td {
+		padding-right: 2px;
+		padding-left: 2px;
+	}
+
+	.items-table th {
+		font-size: 6px;
+	}
+
+	.items-table td {
+		font-size: 8px;
+	}
+
+	.delete-btn {
+		width: 24px;
+		height: 24px;
+	}
+}
+
 @media print {
 	@page {
-		margin: 5mm;
+		margin: 10mm;
 		size: portrait;
 	}
 
@@ -887,16 +954,16 @@ button,
 	.page {
 		position: relative;
 		width: 100% !important;
-		height: 100vh !important;
-		min-height: 0 !important;
-		max-height: 100vh !important;
+		height: auto !important;
+		min-height: calc(297mm - 20mm) !important;
+		max-height: none !important;
 		margin: 0 !important;
 		padding: 10px !important;
 		border-radius: 0 !important;
 		box-shadow: none !important;
-		overflow: hidden !important;
-		page-break-after: avoid !important;
-		break-after: avoid !important;
+		overflow: visible !important;
+		page-break-after: auto !important;
+		break-after: auto !important;
 	}
 
 	.header {
@@ -989,7 +1056,11 @@ button,
 	}
 
 	.items-table,
-	.totals-section,
+	.totals-section {
+		page-break-inside: avoid;
+		break-inside: avoid;
+	}
+
 	.footer {
 		page-break-inside: avoid;
 		break-inside: avoid;
