@@ -956,22 +956,22 @@ button,
 		width: 100% !important;
 		justify-content: flex-start !important;
 		height: auto !important;
-		min-height: calc(297mm - 20mm) !important;
+		min-height: 0 !important;
 		max-height: none !important;
 		margin: 0 !important;
-		padding: 10px !important;
+		padding: 14mm 12mm 12mm !important;
 		border-radius: 0 !important;
 		box-shadow: none !important;
 		overflow: visible !important;
-		page-break-after: auto !important;
-		break-after: auto !important;
+		page-break-after: avoid !important;
+		break-after: avoid-page !important;
 	}
 
 	.header {
 		align-items: flex-start !important;
 		flex-direction: row !important;
 		gap: 20px !important;
-		margin-bottom: 28px !important;
+		margin-bottom: 32px !important;
 	}
 
 	.brand-section,
@@ -1017,7 +1017,7 @@ button,
 	}
 
 	.divider {
-		margin-bottom: 20px !important;
+		margin-bottom: 24px !important;
 	}
 
 	.items-table th {
@@ -1025,12 +1025,12 @@ button,
 	}
 
 	.items-table td {
-		padding-top: 10px !important;
-		padding-bottom: 10px !important;
+		padding-top: 14px !important;
+		padding-bottom: 14px !important;
 	}
 
 	.table-scroll {
-		margin-bottom: 18px !important;
+		margin-bottom: 12px !important;
 		overflow: visible !important;
 	}
 
@@ -1053,7 +1053,7 @@ button,
 	}
 
 	.totals-section {
-		margin-bottom: 6px !important;
+		margin-bottom: 10px !important;
 	}
 
 	.items-table,
@@ -1073,7 +1073,7 @@ button,
 		gap: 20px !important;
 		position: static;
 		margin-top: 0 !important;
-		padding-top: 8px !important;
+		padding-top: 10px !important;
 	}
 
 	.footer > .footer-text {
