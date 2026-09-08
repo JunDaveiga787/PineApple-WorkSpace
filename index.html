@@ -183,7 +183,7 @@
                 const qrResponse = await fetch('https://res.cloudinary.com/nox-company/image/upload/v1788809227/PineApple%20Service%20Media/extended_pcjf56.svg', {
                     cache: 'no-store'
                 });
-                if (!qrResponse.ok) throw new Error('No se pudo cargar el QR original.');
+                if (!qrResponse.ok) throw new Error('No se pudo cargar el QR de la factura.');
 
                 const qrBlob = await qrResponse.blob();
                 qrObjectUrl = URL.createObjectURL(qrBlob);
