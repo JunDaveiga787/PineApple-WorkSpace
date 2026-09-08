@@ -900,7 +900,23 @@ button,
 	}
 
 	.header {
+		align-items: flex-start !important;
+		flex-direction: row !important;
+		gap: 20px !important;
 		margin-bottom: 28px !important;
+	}
+
+	.brand-section,
+	.doc-details {
+		width: auto !important;
+	}
+
+	.doc-details {
+		text-align: right !important;
+	}
+
+	.doc-meta {
+		justify-content: end !important;
 	}
 
 	.divider {
@@ -918,6 +934,25 @@ button,
 
 	.table-scroll {
 		margin-bottom: 18px !important;
+		overflow: visible !important;
+	}
+
+	.items-table {
+		width: 100% !important;
+		min-width: 0 !important;
+		table-layout: fixed;
+	}
+
+	.items-table th:first-child { width: 45% !important; }
+	.items-table th:nth-child(2) { width: 12% !important; }
+	.items-table th:nth-child(3) { width: 21% !important; }
+	.items-table th:nth-child(4) { width: 22% !important; }
+
+	.items-table th,
+	.items-table td {
+		padding-right: 4px !important;
+		padding-left: 4px !important;
+		overflow-wrap: anywhere;
 	}
 
 	.totals-section {
@@ -932,9 +967,16 @@ button,
 	}
 
 	.footer {
+		align-items: center !important;
+		flex-direction: row !important;
+		gap: 20px !important;
 		position: static;
 		margin-top: 0 !important;
 		padding-top: 12px !important;
+	}
+
+	.footer > .footer-text {
+		text-align: right !important;
 	}
 
 	.qr-img {
