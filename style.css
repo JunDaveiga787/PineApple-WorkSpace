@@ -850,110 +850,6 @@ button,
 
 @media print {
 	@page {
-		margin: 0;
-		size: letter portrait;
-	}
-
-	html, body {
-		width: 100%;
-		height: auto;
-		margin: 0;
-		padding: 0;
-		background: white;
-		overflow: visible;
-		-webkit-print-color-adjust: exact;
-		print-color-adjust: exact;
-	}
-
-	.controls {
-		display: none !important;
-	}
-
-	.items-table th:last-child,
-	.items-table td:last-child {
-		display: none;
-	}
-
-	.meta-label,
-	.meta-value,
-	.items-table th,
-	.items-table td {
-		color: #1d1d1f !important;
-		-webkit-print-color-adjust: exact;
-		print-color-adjust: exact;
-	}
-
-	.page {
-		position: relative;
-		width: 100%;
-		height: 11in;
-		min-height: 0;
-		max-height: 11in;
-		margin: 0;
-		padding: 32px 40px;
-		border-radius: 0;
-		box-shadow: none;
-		overflow: visible;
-		box-sizing: border-box;
-		page-break-inside: avoid;
-		page-break-before: avoid;
-		page-break-after: avoid;
-		break-inside: avoid;
-		break-before: avoid;
-		break-after: avoid;
-	}
-
-	.header {
-		margin-bottom: 28px !important;
-	}
-
-	.divider {
-		margin: 0 0 20px !important;
-	}
-
-	.table-scroll {
-		margin-bottom: 24px !important;
-	}
-
-	.items-table td {
-		padding: 12px 8px !important;
-	}
-
-	.totals-section {
-		margin-bottom: 30px !important;
-	}
-
-	.footer {
-		position: absolute;
-		right: 40px;
-		bottom: 32px;
-		left: 40px;
-		padding-top: 16px !important;
-		page-break-inside: avoid;
-		break-inside: avoid;
-		flex-shrink: 0;
-	}
-
-	.qr-img {
-		width: 58px !important;
-		height: 58px !important;
-		flex-shrink: 0;
-	}
-
-	[contenteditable="true"] {
-		box-shadow: none;
-	}
-
-	[contenteditable="true"]:hover,
-	[contenteditable="true"]:focus {
-		background: transparent;
-	}
-}
-
-
-/**/
-@media print {
-	@page {
 		margin: 5mm;
 		size: portrait;
 	}
@@ -966,6 +862,8 @@ button,
 		padding: 0 !important;
 		background: white !important;
 		overflow: visible !important;
+		-webkit-print-color-adjust: exact;
+		print-color-adjust: exact;
 	}
 
 	.controls {
@@ -974,7 +872,7 @@ button,
 
 	.items-table th:last-child,
 	.items-table td:last-child {
-		display: none;
+		display: none !important;
 	}
 
 	.meta-label,
@@ -1008,8 +906,20 @@ button,
 		break-inside: avoid;
 	}
 
+	.footer {
+		position: static;
+	}
+
+	.qr-img {
+		width: 58px !important;
+		height: 58px !important;
+		flex-shrink: 0;
+	}
+
 	[contenteditable="true"] {
 		box-shadow: none !important;
 		background: transparent !important;
 	}
 }
+
+
