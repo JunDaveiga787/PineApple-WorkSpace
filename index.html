@@ -196,6 +196,7 @@
                 });
                 qrImage.src = qrDataUrl;
                 qrImage.removeAttribute('crossorigin');
+                if (qrImage.decode) await qrImage.decode();
             }
 
             exportPage.style.position = 'absolute';
