@@ -127,7 +127,7 @@
         <!-- PIE DE PÁGINA -->
         <div class="footer">
             <div class="footer-qr">
-                <img src="https://res.cloudinary.com/nox-company/image/upload/v1788809227/PineApple%20Service%20Media/extended_pcjf56.svg" alt="Código QR" class="qr-img" crossorigin="anonymous">
+                <img src="https://res.cloudinary.com/nox-company/image/upload/v1788809227/PineApple%20Service%20Media/extended_pcjf56.svg?cacheBust=20260908" alt="Código QR" class="qr-img" crossorigin="anonymous">
                 <div class="footer-text">
                     <span class="slogan" contenteditable="true">Escanea&nbsp;para&nbsp;más&nbsp;información</span>
                 </div>
@@ -142,6 +142,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
+        const QR_IMAGE_URL = 'https://res.cloudinary.com/nox-company/image/upload/v1788809227/PineApple%20Service%20Media/extended_pcjf56.svg?cacheBust=20260908';
+
         function parseVal(str) {
             if (!str) return 0;
             let clean = str.toString().replace(/[^0-9.-]+/g, "");
@@ -180,7 +182,7 @@
             let qrObjectUrl = '';
 
             if (qrImage) {
-                const qrResponse = await fetch('https://res.cloudinary.com/nox-company/image/upload/v1788809227/PineApple%20Service%20Media/extended_pcjf56.svg', {
+                const qrResponse = await fetch(QR_IMAGE_URL, {
                     cache: 'no-store'
                 });
                 if (!qrResponse.ok) throw new Error('No se pudo cargar el QR de la factura.');
