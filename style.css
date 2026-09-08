@@ -896,6 +896,66 @@ button,
 	}
 }
 
+.pdf-export-page {
+	width: 940px !important;
+	min-height: 1120px !important;
+	padding: 78px 82px 52px !important;
+	border-radius: 0 !important;
+}
+
+.pdf-export-page .header {
+	align-items: flex-start !important;
+	flex-direction: row !important;
+	gap: 40px !important;
+	margin-bottom: 58px !important;
+}
+
+.pdf-export-page .brand-section {
+	width: auto !important;
+	align-items: center !important;
+	gap: 18px !important;
+}
+
+.pdf-export-page .doc-details {
+	width: auto !important;
+	text-align: right !important;
+}
+
+.pdf-export-page .doc-meta {
+	grid-template-columns: auto auto !important;
+	justify-content: end !important;
+	gap: 9px 16px !important;
+}
+
+.pdf-export-page .table-scroll {
+	margin: 0 0 46px !important;
+	overflow: visible !important;
+}
+
+.pdf-export-page .items-table {
+	width: 100% !important;
+	min-width: 0 !important;
+}
+
+.pdf-export-page .items-table th,
+.pdf-export-page .items-table td {
+	padding-right: 10px !important;
+	padding-left: 10px !important;
+	font-size: 13px !important;
+	line-height: normal !important;
+}
+
+.pdf-export-page .items-table th {
+	font-size: 10px !important;
+}
+
+.pdf-export-page .footer {
+	align-items: center !important;
+	flex-direction: row !important;
+	gap: 30px !important;
+	margin-top: 0 !important;
+}
+
 @media (max-width: 420px) {
 	body {
 		padding: 10px 8px 20px;

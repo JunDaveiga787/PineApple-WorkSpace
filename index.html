@@ -176,30 +176,59 @@
 
         async function createPdfFile() {
             const page = document.querySelector('.page');
-            const canvas = await html2canvas(page, {
+            const exportPage = page.cloneNode(true);
+            exportPage.style.position = 'absolute';
+            exportPage.style.left = '-10000px';
+            exportPage.style.top = '0';
+            exportPage.style.width = '940px';
+            exportPage.style.minHeight = '1120px';
+            exportPage.style.height = 'auto';
+            exportPage.style.margin = '0';
+            exportPage.classList.add('pdf-export-page');
+            exportPage.querySelectorAll('.delete-btn').forEach(button => button.remove());
+            document.body.appendChild(exportPage);
+
+            const canvas = await html2canvas(exportPage, {
                 scale: 2,
                 useCORS: true,
                 backgroundColor: '#ffffff',
                 logging: false
             });
+            exportPage.remove();
+
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
             const pageWidth = 210;
             const pageHeight = 297;
             const imageWidth = pageWidth;
             const imageHeight = (canvas.height * imageWidth) / canvas.width;
-            const imageData = canvas.toDataURL('image/jpeg', 0.94);
-            let remainingHeight = imageHeight;
-            let position = 0;
+            const pixelsPerPdfPage = Math.floor((pageHeight / imageHeight) * canvas.height);
+            let sourceTop = 0;
+            let pageNumber = 0;
 
-            pdf.addImage(imageData, 'JPEG', 0, position, imageWidth, imageHeight);
-            remainingHeight -= pageHeight;
+            while (sourceTop < canvas.height) {
+                const sourceHeight = Math.min(pixelsPerPdfPage, canvas.height - sourceTop);
+                const pageCanvas = document.createElement('canvas');
+                pageCanvas.width = canvas.width;
+                pageCanvas.height = sourceHeight;
+                pageCanvas.getContext('2d').drawImage(
+                    canvas,
+                    0, sourceTop, canvas.width, sourceHeight,
+                    0, 0, pageCanvas.width, pageCanvas.height
+                );
 
-            while (remainingHeight > 0) {
-                position -= pageHeight;
-                pdf.addPage();
-                pdf.addImage(imageData, 'JPEG', 0, position, imageWidth, imageHeight);
-                remainingHeight -= pageHeight;
+                if (pageNumber > 0) pdf.addPage();
+                pdf.addImage(
+                    pageCanvas.toDataURL('image/jpeg', 0.94),
+                    'JPEG',
+                    0,
+                    0,
+                    imageWidth,
+                    (sourceHeight * imageWidth) / canvas.width
+                );
+
+                sourceTop += sourceHeight;
+                pageNumber += 1;
             }
 
             return pdf.output('blob');
