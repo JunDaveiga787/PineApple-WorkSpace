@@ -854,23 +854,15 @@ button,
 		size: letter portrait;
 	}
 
-	html {
-		height: 11in;
-		overflow: hidden;
-	}
-
-	body {
-		position: absolute;
-		top: 0;
-		left: 0;
+	html, body {
 		width: 100%;
-		height: 11in;
+		height: 100%;
 		margin: 0;
 		padding: 0;
 		background: white;
+		overflow: hidden;
 		-webkit-print-color-adjust: exact;
 		print-color-adjust: exact;
-		overflow: hidden;
 	}
 
 	.controls {
@@ -892,29 +884,46 @@ button,
 	}
 
 	.page {
-		position: relative;
 		width: 100%;
-		height: 11in;
+		height: 100vh;
 		min-height: 0;
-		max-height: 11in;
+		max-height: 100vh;
 		margin: 0;
-		padding: 45px 55px;
+		padding: 32px 40px;
 		border-radius: 0;
 		box-shadow: none;
 		overflow: hidden;
-		page-break-before: avoid;
-		page-break-after: avoid !important;
+		box-sizing: border-box;
 		page-break-inside: avoid;
-		break-before: avoid;
-		break-after: avoid !important;
+		page-break-before: avoid;
+		page-break-after: avoid;
 		break-inside: avoid;
+		break-before: avoid;
+		break-after: avoid;
 	}
 
-	.items-table,
-	.totals-section,
+	.header {
+		margin-bottom: 28px !important;
+	}
+
+	.divider {
+		margin: 0 0 20px !important;
+	}
+
+	.table-scroll {
+		margin-bottom: 24px !important;
+	}
+
+	.items-table td {
+		padding: 12px 8px !important;
+	}
+
+	.totals-section {
+		margin-bottom: 30px !important;
+	}
+
 	.footer {
-		page-break-inside: avoid;
-		break-inside: avoid;
+		padding-top: 16px !important;
 	}
 
 	[contenteditable="true"] {
@@ -926,6 +935,3 @@ button,
 		background: transparent;
 	}
 }
-
-
-
