@@ -3093,9 +3093,64 @@
                 .trim();
         }
 
-        function getSmartSuggestions(query, products) {
+            const suggestionIndexCache = productCatalog.map(product => ({
+                product,
+                normalized: normalizeSearchText(product),
+                tokens: normalizeSearchText(product).split(/\s+/).filter(Boolean)
+            }));
+            const suggestionCache = new Map();
+            const suggestionUsage = JSON.parse(localStorage.getItem('pineappleSuggestionUsage') || '{}');
+
+        function editDistanceWithinLimit(first, second, limit) {
+            if (Math.abs(first.length - second.length) > limit) return limit + 1;
+
+            const previous = Array.from({ length: second.length + 1 }, (_, index) => index);
+            for (let row = 1; row <= first.length; row += 1) {
+                const current = [row];
+                let smallest = current[0];
+
+                for (let column = 1; column <= second.length; column += 1) {
+                    const cost = first[row - 1] === second[column - 1] ? 0 : 1;
+                    const value = Math.min(
+                        current[column - 1] + 1,
+                        previous[column] + 1,
+                        previous[column - 1] + cost
+                    );
+                    current.push(value);
+                    smallest = Math.min(smallest, value);
+                }
+
+                if (smallest > limit) return limit + 1;
+                previous.splice(0, previous.length, ...current);
+            }
+
+            return previous[second.length];
+        }
+
+        function getTokenMatchScore(queryWord, productTokens, spellMap) {
+            const expandedWord = spellMap[queryWord] || queryWord;
+            let bestScore = 0;
+
+            productTokens.forEach(productWord => {
+                if (productWord === expandedWord) bestScore = Math.max(bestScore, 120);
+                else if (productWord.startsWith(expandedWord)) bestScore = Math.max(bestScore, 100);
+                else if (productWord.includes(expandedWord)) bestScore = Math.max(bestScore, 78);
+                else if (expandedWord.length >= 3) {
+                    const limit = expandedWord.length >= 7 ? 2 : 1;
+                    const distance = editDistanceWithinLimit(expandedWord, productWord, limit);
+                    if (distance <= limit) bestScore = Math.max(bestScore, 72 - distance * 14);
+                }
+            });
+
+            return bestScore;
+        }
+
+        function getSmartSuggestions(query) {
             const normalizedQuery = normalizeSearchText(query);
             if (!normalizedQuery) return [];
+
+            const cached = suggestionCache.get(normalizedQuery);
+            if (cached) return cached;
 
             const queryTokens = normalizedQuery.split(/\s+/).filter(Boolean);
             const queryWords = [...new Set(queryTokens)];
@@ -3114,35 +3169,22 @@
                 mot: 'motor'
             };
 
-            return products
-                .map(product => {
-                    const normalizedProduct = normalizeSearchText(product);
-                    const productTokens = normalizedProduct.split(/\s+/).filter(Boolean);
+            const matches = suggestionIndexCache
+                .map(({ product, normalized, tokens }) => {
                     let score = 0;
 
-                    if (normalizedProduct === normalizedQuery) score += 1000;
-                    if (normalizedProduct.startsWith(normalizedQuery)) score += 260;
-                    if (normalizedProduct.includes(normalizedQuery)) score += 120;
+                    if (normalized === normalizedQuery) score += 2000;
+                    if (normalized.startsWith(normalizedQuery)) score += 500;
+                    if (normalized.includes(normalizedQuery)) score += 220;
 
-                    const matchedWords = queryWords.filter(word => {
-                        const wordExpanded = spellMap[word] || word;
-                        return normalizedProduct.includes(wordExpanded) || productTokens.some(token => token.startsWith(word) || token.startsWith(wordExpanded));
-                    }).length;
-                    score += matchedWords * 42;
+                    const tokenScores = queryWords.map(word => getTokenMatchScore(word, tokens, spellMap));
+                    const matchedWords = tokenScores.filter(tokenScore => tokenScore > 0).length;
+                    score += tokenScores.reduce((total, tokenScore) => total + tokenScore, 0);
+                    if (matchedWords === queryWords.length) score += 260;
+                    if (matchedWords === 0) return null;
 
-                    const allTokensPresent = queryWords.every(word => {
-                        const expandedWord = spellMap[word] || word;
-                        return normalizedProduct.includes(expandedWord) || productTokens.some(token => token.includes(expandedWord));
-                    });
-                    if (allTokensPresent) score += 80;
-
-                    const prefixBonus = queryWords.filter(word => {
-                        const expandedWord = spellMap[word] || word;
-                        return productTokens.some(token => token.startsWith(expandedWord));
-                    }).length;
-                    score += prefixBonus * 30;
-
-                    score += Math.max(0, 55 - Math.abs(normalizedQuery.length - normalizedProduct.length));
+                    score += (suggestionUsage[product] || 0) * 35;
+                    score -= Math.max(0, tokens.length - queryWords.length) * 4;
 
                     if (score > 0) {
                         return { product, score };
@@ -3152,14 +3194,20 @@
                 })
                 .filter(Boolean)
                 .sort((a, b) => b.score - a.score)
-                .slice(0, 8)
+                .slice(0, 10)
                 .map(item => item.product);
+
+            suggestionCache.set(normalizedQuery, matches);
+            if (suggestionCache.size > 80) suggestionCache.delete(suggestionCache.keys().next().value);
+            return matches;
         }
 
         function selectSuggestion(product) {
             if (!activeSuggestionCell) return;
 
             activeSuggestionCell.innerText = product;
+            suggestionUsage[product] = (suggestionUsage[product] || 0) + 1;
+            localStorage.setItem('pineappleSuggestionUsage', JSON.stringify(suggestionUsage));
             activeSuggestionCell.focus();
 
             const selection = window.getSelection();
@@ -3174,7 +3222,7 @@
 
         function showProductSuggestions(cell) {
             const query = cell.innerText.trim();
-            const matches = getSmartSuggestions(query, productCatalog);
+            const matches = getSmartSuggestions(query);
 
             if (!matches.length) {
                 hideProductSuggestions();
@@ -3182,7 +3230,7 @@
             }
 
             activeSuggestionCell = cell;
-            suggestionIndex = -1;
+            suggestionIndex = 0;
             suggestionsBox.innerHTML = matches.map((product, index) =>
                 `<button class="product-suggestion${index === 0 ? ' is-selected' : ''}" type="button" role="option" data-product="${product}">${product}</button>`
             ).join('');
