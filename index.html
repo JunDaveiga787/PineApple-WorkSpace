@@ -179,7 +179,6 @@
             const page = document.querySelector('.page');
             const exportPage = page.cloneNode(true);
             const qrImage = exportPage.querySelector('.qr-img');
-            let qrObjectUrl = '';
 
             if (qrImage) {
                 const qrUrlWithCacheBust = `${QR_IMAGE_URL}?_=${Date.now()}`;
@@ -189,8 +188,13 @@
                 if (!qrResponse.ok) throw new Error('No se pudo cargar el QR de la factura.');
 
                 const qrBlob = await qrResponse.blob();
-                qrObjectUrl = URL.createObjectURL(qrBlob);
-                qrImage.src = qrObjectUrl;
+                const qrDataUrl = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = () => reject(new Error('No se pudo preparar el QR de la factura.'));
+                    reader.readAsDataURL(qrBlob);
+                });
+                qrImage.src = qrDataUrl;
                 qrImage.removeAttribute('crossorigin');
             }
 
@@ -228,7 +232,6 @@
                 logging: false
             });
             exportPage.remove();
-            if (qrObjectUrl) URL.revokeObjectURL(qrObjectUrl);
 
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
