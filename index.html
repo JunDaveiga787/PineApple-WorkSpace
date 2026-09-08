@@ -142,8 +142,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
-        const QR_IMAGE_URL = 'https://res.cloudinary.com/nox-company/image/upload/v1788809227/PineApple%20Service%20Media/extended_pcjf56.svg';
-
         function parseVal(str) {
             if (!str) return 0;
             let clean = str.toString().replace(/[^0-9.-]+/g, "");
@@ -178,26 +176,7 @@
         async function createPdfFile() {
             const page = document.querySelector('.page');
             const exportPage = page.cloneNode(true);
-            const qrImage = exportPage.querySelector('.qr-img');
-
-            if (qrImage) {
-                const qrUrlWithCacheBust = `${QR_IMAGE_URL}?_=${Date.now()}`;
-                const qrResponse = await fetch(qrUrlWithCacheBust, {
-                    cache: 'no-store'
-                });
-                if (!qrResponse.ok) throw new Error('No se pudo cargar el QR de la factura.');
-
-                const qrBlob = await qrResponse.blob();
-                const qrDataUrl = await new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = () => resolve(reader.result);
-                    reader.onerror = () => reject(new Error('No se pudo preparar el QR de la factura.'));
-                    reader.readAsDataURL(qrBlob);
-                });
-                qrImage.src = qrDataUrl;
-                qrImage.removeAttribute('crossorigin');
-                if (qrImage.decode) await qrImage.decode();
-            }
+            exportPage.querySelector('.footer-qr')?.remove();
 
             exportPage.style.position = 'absolute';
             exportPage.style.left = '-10000px';
@@ -3520,7 +3499,7 @@
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function () {
-                navigator.serviceWorker.register('./sw.js?v=16');
+                navigator.serviceWorker.register('./sw.js?v=15');
             });
         }
     </script>
