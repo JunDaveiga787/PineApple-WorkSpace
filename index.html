@@ -187,9 +187,9 @@
             exportPage.classList.add('pdf-export-page');
             exportPage.querySelectorAll('.delete-btn').forEach(button => button.remove());
             exportPage.querySelectorAll('#table-body tr').forEach(row => {
-                const description = row.querySelector('td:first-child').innerText.trim();
-                const quantity = row.querySelector('.qty').innerText.trim();
-                const price = row.querySelector('.price').innerText.trim();
+                const description = row.querySelector('td:first-child').textContent.trim();
+                const quantity = row.querySelector('.qty').textContent.trim();
+                const price = row.querySelector('.price').textContent.trim();
 
                 if (!description && !quantity && !price) row.remove();
             });
@@ -213,36 +213,20 @@
             const pdf = new jsPDF('p', 'mm', 'a4');
             const pageWidth = 210;
             const pageHeight = 297;
-            const imageWidth = pageWidth;
-            const imageHeight = (canvas.height * imageWidth) / canvas.width;
-            const pixelsPerPdfPage = Math.floor((pageHeight / imageHeight) * canvas.height);
-            let sourceTop = 0;
-            let pageNumber = 0;
+            const fitScale = Math.min(pageWidth / canvas.width, pageHeight / canvas.height);
+            const imageWidth = canvas.width * fitScale;
+            const imageHeight = canvas.height * fitScale;
+            const imageLeft = (pageWidth - imageWidth) / 2;
+            const imageTop = (pageHeight - imageHeight) / 2;
 
-            while (sourceTop < canvas.height) {
-                const sourceHeight = Math.min(pixelsPerPdfPage, canvas.height - sourceTop);
-                const pageCanvas = document.createElement('canvas');
-                pageCanvas.width = canvas.width;
-                pageCanvas.height = sourceHeight;
-                pageCanvas.getContext('2d').drawImage(
-                    canvas,
-                    0, sourceTop, canvas.width, sourceHeight,
-                    0, 0, pageCanvas.width, pageCanvas.height
-                );
-
-                if (pageNumber > 0) pdf.addPage();
-                pdf.addImage(
-                    pageCanvas.toDataURL('image/jpeg', 0.94),
-                    'JPEG',
-                    0,
-                    0,
-                    imageWidth,
-                    (sourceHeight * imageWidth) / canvas.width
-                );
-
-                sourceTop += sourceHeight;
-                pageNumber += 1;
-            }
+            pdf.addImage(
+                canvas.toDataURL('image/jpeg', 0.94),
+                'JPEG',
+                imageLeft,
+                imageTop,
+                imageWidth,
+                imageHeight
+            );
 
             return pdf.output('blob');
         }
@@ -3497,8 +3481,17 @@
             }, { passive: false });
         });
 
-        // Calcular totales al inicio
-        window.onload = updateGrandTotal;
+        window.onload = function () {
+            document.querySelectorAll('#table-body tr').forEach(row => {
+                const quantity = row.querySelector('.qty');
+                const price = row.querySelector('.price');
+
+                if (quantity.textContent.trim() || price.textContent.trim()) {
+                    recalc(quantity);
+                }
+            });
+            updateGrandTotal();
+        };
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function () {
