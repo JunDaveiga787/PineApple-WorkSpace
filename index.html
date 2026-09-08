@@ -19,23 +19,11 @@
                 <button class="btn" type="button" onclick="toggleExportMenu()" aria-expanded="false" aria-controls="export-menu"><span aria-hidden="true">↗</span> Exportar PDF</button>
                 <div class="export-menu" id="export-menu" hidden>
                     <button type="button" onclick="downloadPdf()"><span aria-hidden="true">↓</span> Descargar PDF</button>
-                    <button type="button" onclick="openWhatsappDialog()"><span aria-hidden="true">◉</span> Compartir PDF por WhatsApp</button>
+                    <button type="button" onclick="sharePdf()"><span aria-hidden="true">◉</span> Compartir PDF</button>
                 </div>
             </div>
         </div>
     </div>
-
-    <dialog class="whatsapp-dialog" id="whatsapp-dialog">
-        <form method="dialog" onsubmit="shareOnWhatsapp(event)">
-            <button class="dialog-close" type="button" onclick="closeWhatsappDialog()" aria-label="Cerrar">&times;</button>
-            <h2>Compartir PDF por WhatsApp</h2>
-            <p>Se generará el PDF y se abrirá el panel de compartir del teléfono. Luego elige WhatsApp y el contacto.</p>
-            <div class="dialog-actions">
-                <button class="btn btn-secondary" type="button" onclick="closeWhatsappDialog()">Cancelar</button>
-                <button class="btn" type="submit">Compartir archivo</button>
-            </div>
-        </form>
-    </dialog>
 
     <!-- Hoja de Factura -->
     <div class="page">
@@ -228,29 +216,7 @@
             }
         }
 
-        function openWhatsappDialog() {
-            closeExportMenu();
-            const dialog = document.getElementById('whatsapp-dialog');
-
-            if (typeof dialog.showModal === 'function') {
-                dialog.showModal();
-            } else {
-                dialog.setAttribute('open', '');
-            }
-
-        }
-
-        function closeWhatsappDialog() {
-            const dialog = document.getElementById('whatsapp-dialog');
-
-            if (typeof dialog.close === 'function') {
-                dialog.close();
-            } else {
-                dialog.removeAttribute('open');
-            }
-        }
-
-        function getWhatsappMessage() {
+        function getShareMessage() {
             const documentType = document.querySelector('.doc-title').innerText.trim();
             const metaValues = document.querySelectorAll('.doc-meta .meta-value');
             const client = metaValues[1] ? metaValues[1].innerText.trim() : '';
@@ -268,17 +234,15 @@
             return `Hola, te comparto esta ${documentType.toLowerCase()} de PineApple Multiservice.${client ? `\nCliente: ${client}` : ''}${rows.length ? `\n\n${rows.join('\n')}` : ''}\n\nTotal: ${total}`;
         }
 
-        async function shareOnWhatsapp(event) {
-            event.preventDefault();
-
+        async function sharePdf() {
+            closeExportMenu();
             try {
                 const pdfBlob = await createPdfFile();
                 const pdfFile = new File([pdfBlob], 'cotizacion-pineapple.pdf', { type: 'application/pdf' });
-                const message = getWhatsappMessage();
+                const message = getShareMessage();
                 const canShareFiles = navigator.share && (!navigator.canShare || navigator.canShare({ files: [pdfFile] }));
 
                 if (canShareFiles) {
-                    closeWhatsappDialog();
                     await navigator.share({
                         files: [pdfFile],
                         title: 'Cotización PineApple',
@@ -293,8 +257,7 @@
                 link.download = 'cotizacion-pineapple.pdf';
                 link.click();
                 URL.revokeObjectURL(downloadUrl);
-                closeWhatsappDialog();
-                window.alert('Tu navegador no permite adjuntar archivos desde la página. El PDF fue descargado; adjúntalo manualmente en WhatsApp.');
+                window.alert('Tu navegador no permite compartir archivos directamente. El PDF fue descargado para que puedas compartirlo desde tu teléfono.');
             } catch (error) {
                 if (error.name !== 'AbortError') {
                     window.alert('No se pudo generar el PDF. Intenta nuevamente.');
