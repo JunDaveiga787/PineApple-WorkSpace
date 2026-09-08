@@ -855,7 +855,7 @@ button,
 	}
 
 	html {
-		height: 10.5in;
+		height: 11in;
 		overflow: hidden;
 	}
 
@@ -864,7 +864,7 @@ button,
 		top: 0;
 		left: 0;
 		width: 100%;
-		height: 10.5in;
+		height: 11in;
 		margin: 0;
 		padding: 0;
 		background: white;
@@ -894,9 +894,9 @@ button,
 	.page {
 		position: relative;
 		width: 100%;
-		height: 10.5in;
+		height: 11in;
 		min-height: 0;
-		max-height: 10.5in;
+		max-height: 11in;
 		margin: 0;
 		padding: 45px 55px;
 		border-radius: 0;
@@ -929,131 +929,3 @@ button,
 
 
 
-/* ELIMINAR LA SEGUNDA PAGINA AL IMPRIMIR */
-
-@media print {
-	@page {
-		margin: 5mm;
-		size: portrait;
-	}
-
-	html, body {
-		width: 100%;
-		height: auto !important;
-		min-height: 0 !important;
-		margin: 0 !important;
-		padding: 0 !important;
-		background: white !important;
-		overflow: visible !important;
-	}
-
-	.controls {
-		display: none !important;
-	}
-
-	.items-table th:last-child,
-	.items-table td:last-child {
-		display: none;
-	}
-
-	.meta-label,
-	.meta-value,
-	.items-table th,
-	.items-table td {
-		color: #1d1d1f !important;
-		-webkit-print-color-adjust: exact;
-		print-color-adjust: exact;
-	}
-
-	.page {
-		position: relative;
-		width: 100% !important;
-		height: auto !important;
-		min-height: 0 !important;
-		max-height: none !important;
-		margin: 0 !important;
-		padding: 15px !important;
-		border-radius: 0 !important;
-		box-shadow: none !important;
-		overflow: visible !important;
-		page-break-after: avoid !important;
-		break-after: avoid !important;
-	}
-
-	.items-table,
-	.totals-section,
-	.footer {
-		page-break-inside: avoid;
-		break-inside: avoid;
-	}
-
-	[contenteditable="true"] {
-		box-shadow: none !important;
-		background: transparent !important;
-	}
-}
-
-
-/* eliminar la segunda pagina al imprimir*/
-
-@media print {
-	@page {
-		margin: 5mm;
-		size: portrait;
-	}
-
-	html, body {
-		width: 100%;
-		height: auto !important;
-		min-height: 0 !important;
-		margin: 0 !important;
-		padding: 0 !important;
-		background: white !important;
-		overflow: visible !important;
-	}
-
-	.controls {
-		display: none !important;
-	}
-
-	.items-table th:last-child,
-	.items-table td:last-child {
-		display: none;
-	}
-
-	.meta-label,
-	.meta-value,
-	.items-table th,
-	.items-table td {
-		color: #1d1d1f !important;
-		-webkit-print-color-adjust: exact;
-		print-color-adjust: exact;
-	}
-
-	.page {
-		position: relative;
-		width: 100% !important;
-		height: auto !important;
-		min-height: 0 !important;
-		max-height: none !important;
-		margin: 0 !important;
-		padding: 15px !important;
-		border-radius: 0 !important;
-		box-shadow: none !important;
-		overflow: visible !important;
-		page-break-after: avoid !important;
-		break-after: avoid !important;
-	}
-
-	.items-table,
-	.totals-section,
-	.footer {
-		page-break-inside: avoid;
-		break-inside: avoid;
-	}
-
-	[contenteditable="true"] {
-		box-shadow: none !important;
-		background: transparent !important;
-	}
-}
