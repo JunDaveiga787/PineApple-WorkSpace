@@ -570,29 +570,6 @@ button,
 		user-select: text;
 	}
 
-	.controls {
-		top: 10px;
-		align-items: stretch;
-		flex-direction: column;
-		gap: 8px;
-		padding: 12px;
-		border-radius: 16px;
-	}
-
-	.controls-label {
-		padding: 0 4px;
-	}
-
-	.controls-actions {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-	}
-
-	.btn {
-		padding: 0 10px;
-		font-size: 12px;
-	}
-
 	.page {
 		min-height: auto;
 		padding: 30px 18px 28px;
@@ -692,17 +669,26 @@ button,
 
 @media (max-width: 560px) {
 	.controls {
+		top: 10px;
+		align-items: stretch;
+		flex-direction: column;
+		gap: 12px;
 		padding: 10px 12px;
+		border-radius: 16px;
+	}
+
+	.controls-label {
+		padding: 0 4px;
 	}
 
 	.controls-actions {
 		display: grid;
-		grid-template-columns: 1fr;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 		width: 100%;
 	}
 
 	.btn {
-		width: 100%;
+		padding: 0 10px;
 		min-height: 40px;
 		font-size: 11px;
 	}
@@ -833,11 +819,7 @@ button,
 
 @media (max-width: 360px) {
 	.controls-actions {
-		grid-template-columns: 1fr;
-	}
-
-	.btn {
-		width: 100%;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 
 	.page {
