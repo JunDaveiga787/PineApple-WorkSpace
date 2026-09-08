@@ -15,9 +15,29 @@
         <div class="controls-actions">
             <button class="btn btn-secondary" onclick="addRow()"><span aria-hidden="true">+</span> Agregar producto</button>
             <button class="btn btn-secondary" onclick="toggleDocumentType(this)">Factura</button>
-            <button class="btn" onclick="window.print()"><span aria-hidden="true">↗</span> Exportar PDF</button>
+            <div class="export-menu-wrap">
+                <button class="btn" type="button" onclick="toggleExportMenu()" aria-expanded="false" aria-controls="export-menu"><span aria-hidden="true">↗</span> Exportar PDF</button>
+                <div class="export-menu" id="export-menu" hidden>
+                    <button type="button" onclick="downloadPdf()"><span aria-hidden="true">↓</span> Descargar PDF</button>
+                    <button type="button" onclick="openWhatsappDialog()"><span aria-hidden="true">◉</span> Compartir por WhatsApp</button>
+                </div>
+            </div>
         </div>
     </div>
+
+    <dialog class="whatsapp-dialog" id="whatsapp-dialog">
+        <form method="dialog" onsubmit="shareOnWhatsapp(event)">
+            <button class="dialog-close" type="button" onclick="closeWhatsappDialog()" aria-label="Cerrar">&times;</button>
+            <h2>Compartir por WhatsApp</h2>
+            <p>Escribe el número con código de país, sin espacios ni el signo +.</p>
+            <label for="whatsapp-number">Número de WhatsApp</label>
+            <input id="whatsapp-number" name="whatsapp-number" type="tel" inputmode="numeric" autocomplete="tel" placeholder="18095551234" required>
+            <div class="dialog-actions">
+                <button class="btn btn-secondary" type="button" onclick="closeWhatsappDialog()">Cancelar</button>
+                <button class="btn" type="submit">Abrir WhatsApp</button>
+            </div>
+        </form>
+    </dialog>
 
     <!-- Hoja de Factura -->
     <div class="page">
@@ -143,6 +163,80 @@
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             }).format(num);
+        }
+
+        function toggleExportMenu() {
+            const menu = document.getElementById('export-menu');
+            const button = document.querySelector('.export-menu-wrap > .btn');
+            const isOpen = !menu.hidden;
+
+            menu.hidden = isOpen;
+            button.setAttribute('aria-expanded', String(!isOpen));
+        }
+
+        function closeExportMenu() {
+            const menu = document.getElementById('export-menu');
+            const button = document.querySelector('.export-menu-wrap > .btn');
+
+            menu.hidden = true;
+            button.setAttribute('aria-expanded', 'false');
+        }
+
+        function downloadPdf() {
+            closeExportMenu();
+            window.print();
+        }
+
+        function openWhatsappDialog() {
+            closeExportMenu();
+            const dialog = document.getElementById('whatsapp-dialog');
+
+            if (typeof dialog.showModal === 'function') {
+                dialog.showModal();
+            } else {
+                dialog.setAttribute('open', '');
+            }
+
+            document.getElementById('whatsapp-number').focus();
+        }
+
+        function closeWhatsappDialog() {
+            const dialog = document.getElementById('whatsapp-dialog');
+
+            if (typeof dialog.close === 'function') {
+                dialog.close();
+            } else {
+                dialog.removeAttribute('open');
+            }
+        }
+
+        function getWhatsappMessage() {
+            const documentType = document.querySelector('.doc-title').innerText.trim();
+            const metaValues = document.querySelectorAll('.doc-meta .meta-value');
+            const client = metaValues[1] ? metaValues[1].innerText.trim() : '';
+            const rows = [...document.querySelectorAll('#table-body tr')]
+                .map(row => {
+                    const description = row.querySelector('td:first-child').innerText.trim();
+                    const quantity = row.querySelector('.qty').innerText.trim();
+                    const total = row.querySelector('.row-total').innerText.trim();
+
+                    return description ? `- ${description}${quantity ? ` x${quantity}` : ''}${total ? `: ${total}` : ''}` : null;
+                })
+                .filter(Boolean);
+            const total = document.getElementById('grand-total').innerText.trim();
+
+            return `Hola, te comparto esta ${documentType.toLowerCase()} de PineApple Multiservice.${client ? `\nCliente: ${client}` : ''}${rows.length ? `\n\n${rows.join('\n')}` : ''}\n\nTotal: ${total}`;
+        }
+
+        function shareOnWhatsapp(event) {
+            event.preventDefault();
+            const number = document.getElementById('whatsapp-number').value.replace(/\D/g, '');
+
+            if (!number) return;
+
+            const whatsappUrl = `https://wa.me/${number}?text=${encodeURIComponent(getWhatsappMessage())}`;
+            closeWhatsappDialog();
+            window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
         }
 
         function recalc(elem) {
