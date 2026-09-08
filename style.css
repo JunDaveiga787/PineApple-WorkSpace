@@ -954,6 +954,7 @@ button,
 	.page {
 		position: relative;
 		width: 100% !important;
+		justify-content: flex-start !important;
 		height: auto !important;
 		min-height: calc(297mm - 20mm) !important;
 		max-height: none !important;
@@ -1052,7 +1053,7 @@ button,
 	}
 
 	.totals-section {
-		margin-bottom: 20px !important;
+		margin-bottom: 6px !important;
 	}
 
 	.items-table,
@@ -1072,7 +1073,7 @@ button,
 		gap: 20px !important;
 		position: static;
 		margin-top: 0 !important;
-		padding-top: 12px !important;
+		padding-top: 8px !important;
 	}
 
 	.footer > .footer-text {
