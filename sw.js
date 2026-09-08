@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pineapple-app-v10';
+const CACHE_NAME = 'pineapple-app-v11';
 const APP_FILES = ['./', './index.html', './style.css', './manifest.webmanifest'];
 
 self.addEventListener('install', event => {
