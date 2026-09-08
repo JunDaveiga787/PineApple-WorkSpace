@@ -1400,7 +1400,7 @@ button,
 }
 
 .pdf-export-page .footer {
-	align-items: center !important;
+	align-items: flex-start !important;
 	flex-direction: row !important;
 	gap: 24px !important;
 }
@@ -1412,6 +1412,7 @@ button,
 }
 
 .pdf-export-page .footer-qr {
+	align-items: flex-start !important;
 	flex: 0 0 auto !important;
 	gap: 16px !important;
 }
