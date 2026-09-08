@@ -916,7 +916,36 @@ button,
 	}
 
 	.doc-meta {
+		grid-template-columns: auto auto !important;
+		gap: 9px 16px !important;
 		justify-content: end !important;
+		font-size: 13px !important;
+	}
+
+	.brand-subtitle {
+		font-size: 14px !important;
+	}
+
+	.contact-info {
+		font-size: 13px !important;
+		line-height: 1.5 !important;
+	}
+
+	.items-table th {
+		font-size: 9px !important;
+	}
+
+	.items-table td {
+		font-size: 12.5px !important;
+		line-height: 1.35 !important;
+	}
+
+	.total-row {
+		font-size: 14px !important;
+	}
+
+	.total-row.grand-total {
+		font-size: 26px !important;
 	}
 
 	.divider {
@@ -977,6 +1006,14 @@ button,
 
 	.footer > .footer-text {
 		text-align: right !important;
+	}
+
+	.slogan {
+		font-size: 13px !important;
+	}
+
+	.copyright {
+		font-size: 12px !important;
 	}
 
 	.qr-img {
