@@ -1302,17 +1302,17 @@ button,
 
 /* Mantener formato A4 de escritorio en la copia que genera el PDF. */
 .pdf-export-page {
-	width: 940px !important;
-	min-height: 1120px !important;
+	width: 794px !important;
+	min-height: 1123px !important;
 	height: auto !important;
-	padding: 78px 82px 52px !important;
+	padding: 56px 58px 42px !important;
 	border-radius: 0 !important;
 }
 
 .pdf-export-page .header {
 	flex-direction: row !important;
-	gap: 40px !important;
-	margin-bottom: 58px !important;
+	gap: 28px !important;
+	margin-bottom: 36px !important;
 }
 
 .pdf-export-page .brand-section {
@@ -1329,13 +1329,42 @@ button,
 .pdf-export-page .doc-meta {
 	grid-template-columns: auto auto !important;
 	justify-content: end !important;
-	gap: 9px 16px !important;
+	gap: 7px 12px !important;
+}
+
+.pdf-export-page .divider {
+	margin-bottom: 28px !important;
+}
+
+.pdf-export-page .table-scroll {
+	margin-bottom: 30px !important;
+}
+
+.pdf-export-page .items-table td {
+	padding-top: 13px !important;
+	padding-bottom: 13px !important;
+}
+
+.pdf-export-page .totals-section {
+	margin-bottom: 34px !important;
+}
+
+.pdf-export-page .total-row.grand-total {
+	font-size: 21px !important;
+}
+
+.pdf-export-page .pdf-empty-row {
+	padding: 30px 10px !important;
+	color: var(--muted);
+	font-size: 12px !important;
+	font-weight: 400 !important;
+	text-align: center !important;
 }
 
 .pdf-export-page .footer {
 	align-items: center !important;
 	flex-direction: row !important;
-	gap: 30px !important;
+	gap: 24px !important;
 }
 
 
