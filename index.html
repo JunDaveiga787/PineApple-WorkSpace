@@ -177,7 +177,6 @@
         async function createPdfFile() {
             const page = document.querySelector('.page');
             const exportPage = page.cloneNode(true);
-            exportPage.querySelector('.footer-qr')?.remove();
 
             exportPage.style.position = 'absolute';
             exportPage.style.left = '-10000px';
