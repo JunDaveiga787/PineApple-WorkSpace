@@ -30,11 +30,9 @@
             <button class="dialog-close" type="button" onclick="closeWhatsappDialog()" aria-label="Cerrar">&times;</button>
             <h2>Compartir PDF por WhatsApp</h2>
             <p>Se generará el PDF y se abrirá el panel de compartir del teléfono. Luego elige WhatsApp y el contacto.</p>
-            <label for="whatsapp-number">Número de WhatsApp</label>
-            <input id="whatsapp-number" name="whatsapp-number" type="tel" inputmode="numeric" autocomplete="tel" placeholder="18095551234">
             <div class="dialog-actions">
                 <button class="btn btn-secondary" type="button" onclick="closeWhatsappDialog()">Cancelar</button>
-                <button class="btn" type="submit">Abrir WhatsApp</button>
+                <button class="btn" type="submit">Compartir archivo</button>
             </div>
         </form>
     </dialog>
@@ -240,7 +238,6 @@
                 dialog.setAttribute('open', '');
             }
 
-            document.getElementById('whatsapp-number').focus();
         }
 
         function closeWhatsappDialog() {
@@ -273,14 +270,14 @@
 
         async function shareOnWhatsapp(event) {
             event.preventDefault();
-            const number = document.getElementById('whatsapp-number').value.replace(/\D/g, '');
 
             try {
                 const pdfBlob = await createPdfFile();
                 const pdfFile = new File([pdfBlob], 'cotizacion-pineapple.pdf', { type: 'application/pdf' });
                 const message = getWhatsappMessage();
+                const canShareFiles = navigator.share && (!navigator.canShare || navigator.canShare({ files: [pdfFile] }));
 
-                if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+                if (canShareFiles) {
                     closeWhatsappDialog();
                     await navigator.share({
                         files: [pdfFile],
@@ -296,12 +293,8 @@
                 link.download = 'cotizacion-pineapple.pdf';
                 link.click();
                 URL.revokeObjectURL(downloadUrl);
-
-                const whatsappUrl = number
-                    ? `https://wa.me/${number}?text=${encodeURIComponent(message)}`
-                    : `https://wa.me/?text=${encodeURIComponent(message)}`;
                 closeWhatsappDialog();
-                window.location.href = whatsappUrl;
+                window.alert('Tu navegador no permite adjuntar archivos desde la página. El PDF fue descargado; adjúntalo manualmente en WhatsApp.');
             } catch (error) {
                 if (error.name !== 'AbortError') {
                     window.alert('No se pudo generar el PDF. Intenta nuevamente.');
