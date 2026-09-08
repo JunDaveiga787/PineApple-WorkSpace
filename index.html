@@ -182,7 +182,8 @@
             let qrObjectUrl = '';
 
             if (qrImage) {
-                const qrResponse = await fetch(QR_IMAGE_URL, {
+                const qrUrlWithCacheBust = `${QR_IMAGE_URL}?_=${Date.now()}`;
+                const qrResponse = await fetch(qrUrlWithCacheBust, {
                     cache: 'no-store'
                 });
                 if (!qrResponse.ok) throw new Error('No se pudo cargar el QR de la factura.');
