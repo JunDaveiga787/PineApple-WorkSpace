@@ -11,9 +11,35 @@
     <link rel="icon" type="image/png" sizes="512x512" href="https://res.cloudinary.com/nox-company/image/upload/v1788821914/PineApple%20Service%20Media/ChatGPT_Image_Sep_7_2026_06_30_53_PM-Photoroom_tip3f5.png?v=19">
     <link rel="apple-touch-icon" sizes="512x512" href="https://res.cloudinary.com/nox-company/image/upload/v1788821914/PineApple%20Service%20Media/ChatGPT_Image_Sep_7_2026_06_30_53_PM-Photoroom_tip3f5.png?v=19">
     <title>Work Center | PineApple Multiservice</title>
-    <link rel="stylesheet" href="style.css?v=18">
+    <link rel="stylesheet" href="style.css?v=19">
 </head>
 <body>
+
+    <div class="editor-access" id="editor-access" role="dialog" aria-modal="true" aria-labelledby="editor-access-title">
+        <form class="editor-access-card" id="editor-access-form">
+            <div class="editor-access-kicker">PineApple Multiservice</div>
+            <h1 id="editor-access-title">Introduce el código</h1>
+            <p>Usa el teclado para acceder al editor.</p>
+            <label class="sr-only" for="editor-access-code">Código de acceso</label>
+            <input id="editor-access-code" name="accessCode" type="text" inputmode="numeric" pattern="[1-9]{1,6}" maxlength="6" autocomplete="off" required autofocus aria-label="Código de acceso">
+            <div class="passcode-dots" aria-hidden="true"></div>
+            <div class="editor-access-error" id="editor-access-error" role="alert" hidden>Escribe un código válido del 1 al 9.</div>
+            <div class="number-pad" aria-label="Teclado numérico">
+                <button type="button" data-code-key="1">1</button>
+                <button type="button" data-code-key="2">2</button>
+                <button type="button" data-code-key="3">3</button>
+                <button type="button" data-code-key="4">4</button>
+                <button type="button" data-code-key="5">5</button>
+                <button type="button" data-code-key="6">6</button>
+                <button type="button" data-code-key="7">7</button>
+                <button type="button" data-code-key="8">8</button>
+                <button type="button" data-code-key="9">9</button>
+                <span aria-hidden="true"></span>
+                <button class="number-pad-delete" type="button" data-code-delete aria-label="Borrar código">⌫</button>
+            </div>
+            <button class="btn" type="submit">Entrar al editor</button>
+        </form>
+    </div>
 
     <!-- Panel de controles -->
     <div class="controls" aria-label="Acciones de la cotización">
@@ -149,6 +175,64 @@
             let clean = str.toString().replace(/[^0-9.-]+/g, "");
             return parseFloat(clean) || 0;
         }
+
+        function unlockEditor() {
+            document.getElementById('editor-access').hidden = true;
+            document.body.classList.remove('editor-locked');
+            document.querySelector('.controls').removeAttribute('inert');
+            document.querySelector('.page').removeAttribute('inert');
+        }
+
+        function setupEditorAccess() {
+            const form = document.getElementById('editor-access-form');
+            const codeInput = document.getElementById('editor-access-code');
+            const error = document.getElementById('editor-access-error');
+            const dots = document.querySelector('.passcode-dots');
+
+            function updateCodeDots() {
+                dots.innerHTML = '';
+                for (let index = 0; index < codeInput.value.length; index += 1) {
+                    const dot = document.createElement('span');
+                    dot.className = 'is-filled';
+                    dots.appendChild(dot);
+                }
+            }
+
+            document.body.classList.add('editor-locked');
+            document.querySelector('.controls').setAttribute('inert', '');
+            document.querySelector('.page').setAttribute('inert', '');
+
+            codeInput.addEventListener('input', () => {
+                codeInput.value = codeInput.value.replace(/[^1-9]/g, '').slice(0, 6);
+                updateCodeDots();
+                error.hidden = true;
+            });
+
+            document.querySelectorAll('[data-code-key]').forEach(button => {
+                button.addEventListener('click', () => {
+                    if (codeInput.value.length >= 6) return;
+                    codeInput.value += button.dataset.codeKey;
+                    codeInput.dispatchEvent(new Event('input', { bubbles: true }));
+                });
+            });
+
+            document.querySelector('[data-code-delete]').addEventListener('click', () => {
+                codeInput.value = codeInput.value.slice(0, -1);
+                codeInput.dispatchEvent(new Event('input', { bubbles: true }));
+            });
+
+            form.addEventListener('submit', event => {
+                event.preventDefault();
+                if (!/^[1-9]{1,6}$/.test(codeInput.value)) {
+                    error.hidden = false;
+                    codeInput.focus();
+                    return;
+                }
+                unlockEditor();
+            });
+        }
+
+        setupEditorAccess();
 
         function formatNum(num) {
             if (num === 0) return "0.00";

@@ -36,6 +36,150 @@ body {
 	-webkit-font-smoothing: antialiased;
 }
 
+.editor-locked {
+	overflow: hidden;
+}
+
+.editor-access {
+	position: fixed;
+	inset: 0;
+	z-index: 100;
+	display: grid;
+	place-items: center;
+	padding: 20px;
+	background: rgba(245, 245, 247, 0.72);
+	backdrop-filter: blur(18px);
+	-webkit-backdrop-filter: blur(18px);
+}
+
+.editor-access[hidden] {
+	display: none;
+}
+
+.editor-access-card {
+	display: grid;
+	gap: 12px;
+	width: min(100%, 390px);
+	padding: 32px 28px 28px;
+	border: 1px solid rgba(255, 255, 255, 0.9);
+	border-radius: 30px;
+	background: rgba(250, 250, 252, 0.92);
+	box-shadow: 0 24px 70px rgba(29, 29, 31, 0.18);
+	text-align: center;
+}
+
+.editor-access-kicker {
+	color: var(--blue);
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.8px;
+	text-transform: uppercase;
+}
+
+.editor-access-card h1 {
+	margin: 0;
+	font-size: 26px;
+}
+
+.editor-access-card p {
+	margin: 0 0 6px;
+	color: var(--muted);
+	font-size: 13px;
+	top: -100px;
+	left: 0;
+	opacity: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+.editor-access-card input {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	top: -100px;
+	left: 0;
+	opacity: 0;
+}
+
+.editor-access-card input:focus {
+	outline: 0;
+}
+
+.passcode-dots {
+	display: flex;
+	justify-content: center;
+	gap: 9px;
+	flex-wrap: wrap;
+	max-width: 180px;
+	min-height: 14px;
+	margin: 4px 0 2px;
+	margin-right: auto;
+	margin-left: auto;
+}
+
+.passcode-dots span {
+	width: 11px;
+	height: 11px;
+	border: 1px solid #8e8e93;
+	border-radius: 50%;
+	background: transparent;
+}
+
+.passcode-dots span.is-filled {
+	border-color: var(--ink);
+	background: var(--ink);
+}
+
+.number-pad {
+	display: grid;
+	grid-template-columns: repeat(3, 68px);
+	justify-content: center;
+	gap: 12px;
+	margin: 8px 0 10px;
+}
+
+.number-pad button {
+	display: grid;
+	place-items: center;
+	width: 68px;
+	height: 68px;
+	padding: 0;
+	border: 0;
+	border-radius: 50%;
+	color: var(--ink);
+	background: #e5e5ea;
+	font-size: 25px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: background 140ms ease, transform 140ms ease;
+}
+
+.number-pad button:hover {
+	background: #d1d1d6;
+}
+
+.number-pad button:active {
+	transform: scale(0.92);
+}
+
+.number-pad .number-pad-delete {
+	color: var(--muted);
+	background: transparent;
+	font-size: 28px;
+}
+
+.number-pad .number-pad-delete:hover {
+	background: #e5e5ea;
+}
+
+.editor-access-error {
+	color: #c62828;
+	font-size: 12px;
+}
+
 button,
 [contenteditable="true"] {
 	font: inherit;
