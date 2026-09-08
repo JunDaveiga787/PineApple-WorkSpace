@@ -127,7 +127,6 @@
         <!-- PIE DE PÁGINA -->
         <div class="footer">
             <div class="footer-qr">
-                <!-- NUEVO CÓDIGO QR SVG DESDE CLOUDINARY -->
                 <img src="https://res.cloudinary.com/nox-company/image/upload/v1788809227/PineApple%20Service%20Media/extended_pcjf56.svg" alt="Código QR" class="qr-img" crossorigin="anonymous">
                 <div class="footer-text">
                     <span class="slogan" contenteditable="true">Escanea&nbsp;para&nbsp;más&nbsp;información</span>
@@ -181,7 +180,7 @@
             let qrObjectUrl = '';
 
             if (qrImage) {
-                const qrResponse = await fetch('https://res.cloudinary.com/nox-company/image/upload/v1788809227/PineApple%20Service%20Media/extended_pcjf56.svg?export=20260908', {
+                const qrResponse = await fetch('https://res.cloudinary.com/nox-company/image/upload/v1788809227/PineApple%20Service%20Media/extended_pcjf56.svg', {
                     cache: 'no-store'
                 });
                 if (!qrResponse.ok) throw new Error('No se pudo cargar el QR original.');
