@@ -908,6 +908,8 @@ button,
 
 	.footer {
 		position: static;
+		margin-top: -18px !important;
+		padding-top: 16px !important;
 	}
 
 	.qr-img {
