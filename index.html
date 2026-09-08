@@ -177,6 +177,21 @@
         async function createPdfFile() {
             const page = document.querySelector('.page');
             const exportPage = page.cloneNode(true);
+            const qrImage = exportPage.querySelector('.qr-img');
+            let qrObjectUrl = '';
+
+            if (qrImage) {
+                const qrResponse = await fetch('https://res.cloudinary.com/nox-company/image/upload/v1788809227/PineApple%20Service%20Media/extended_pcjf56.svg?export=20260908', {
+                    cache: 'no-store'
+                });
+                if (!qrResponse.ok) throw new Error('No se pudo cargar el QR original.');
+
+                const qrBlob = await qrResponse.blob();
+                qrObjectUrl = URL.createObjectURL(qrBlob);
+                qrImage.src = qrObjectUrl;
+                qrImage.removeAttribute('crossorigin');
+            }
+
             exportPage.style.position = 'absolute';
             exportPage.style.left = '-10000px';
             exportPage.style.top = '0';
@@ -211,6 +226,7 @@
                 logging: false
             });
             exportPage.remove();
+            if (qrObjectUrl) URL.revokeObjectURL(qrObjectUrl);
 
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
