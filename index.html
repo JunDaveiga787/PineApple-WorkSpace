@@ -167,9 +167,48 @@
         </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
+        const firebaseConfig = window.PINEAPPLE_FIREBASE_CONFIG || {
+            apiKey: 'AIzaSyB0FfTSia8wOEFyggZbmt334bfUkHkkQbU',
+            authDomain: 'pineapple-work-space.firebaseapp.com',
+            databaseURL: 'https://pineapple-work-space-default-rtdb.firebaseio.com',
+            projectId: 'pineapple-work-space',
+            storageBucket: 'pineapple-work-space.firebasestorage.app',
+            messagingSenderId: '865951896293',
+            appId: '1:865951896293:web:58283a7478a297d9e67a0c',
+            measurementId: 'G-54Z5ZWDGQF'
+        };
+
+        const hasFirebaseConfig = !!firebaseConfig && !!firebaseConfig.projectId && !String(firebaseConfig.projectId).includes('YOUR_');
+        let firebaseDb = null;
+        let firebaseAuthReady = Promise.resolve();
+
+        if (hasFirebaseConfig && window.firebase && !firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        if (hasFirebaseConfig && firebase.apps.length) {
+            firebaseDb = firebase.firestore();
+        }
+
+        if (firebase.apps.length && firebase.auth) {
+            const firebaseAuth = firebase.auth();
+            firebaseAuthReady = firebaseAuth.signInAnonymously()
+                .then(() => {
+                    console.log('Autenticado anónimamente');
+                    return firebaseAuth.currentUser;
+                })
+                .catch(error => {
+                    console.error('Error de autenticación:', error);
+                    return null;
+                });
+        }
+
         function parseVal(str) {
             if (!str) return 0;
             let clean = str.toString().replace(/[^0-9.-]+/g, "");
@@ -266,6 +305,12 @@
             button.setAttribute('aria-expanded', 'false');
         }
 
+        function getPdfFileName() {
+            const docTitle = document.querySelector('.doc-title')?.innerText.trim() || '';
+            const normalized = docTitle.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            return normalized.includes('FACTURA') ? 'Factura_PineApple.pdf' : 'Cotizacion_PineApple.pdf';
+        }
+
         async function createPdfFile() {
             const page = document.querySelector('.page');
             const exportPage = page.cloneNode(true);
@@ -338,7 +383,7 @@
                 const downloadUrl = URL.createObjectURL(pdfBlob);
                 const link = document.createElement('a');
                 link.href = downloadUrl;
-                link.download = 'cotizacion-pineapple.pdf';
+                link.download = getPdfFileName();
                 link.click();
                 URL.revokeObjectURL(downloadUrl);
             } catch (error) {
@@ -368,14 +413,15 @@
             closeExportMenu();
             try {
                 const pdfBlob = await createPdfFile();
-                const pdfFile = new File([pdfBlob], 'cotizacion-pineapple.pdf', { type: 'application/pdf' });
+                const pdfFileName = getPdfFileName();
+                const pdfFile = new File([pdfBlob], pdfFileName, { type: 'application/pdf' });
                 const message = getShareMessage();
                 const canShareFiles = navigator.share && (!navigator.canShare || navigator.canShare({ files: [pdfFile] }));
 
                 if (canShareFiles) {
                     await navigator.share({
                         files: [pdfFile],
-                        title: 'Cotización PineApple',
+                        title: pdfFileName.replace(/\.pdf$/i, ''),
                         text: message
                     });
                     return;
@@ -384,7 +430,7 @@
                 const downloadUrl = URL.createObjectURL(pdfBlob);
                 const link = document.createElement('a');
                 link.href = downloadUrl;
-                link.download = 'cotizacion-pineapple.pdf';
+                link.download = pdfFileName;
                 link.click();
                 URL.revokeObjectURL(downloadUrl);
                 window.alert('Tu navegador no permite compartir archivos directamente. El PDF fue descargado para que puedas compartirlo desde tu teléfono.');
@@ -3316,6 +3362,176 @@
 
         productCatalog.push(...learnedProducts);
 
+        function normalizeSearchText(text = '') {
+            return text
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^a-z0-9]+/g, ' ')
+                .trim();
+        }
+
+        function getNextClientId() {
+            const ids = clientCatalog
+                .map(client => client && client.id)
+                .filter(id => typeof id === 'string' && /^@\d+$/.test(id));
+
+            let maxId = 0;
+            ids.forEach(id => {
+                const numericId = Number(id.replace(/[^0-9]/g, ''));
+                if (!Number.isNaN(numericId) && numericId > maxId) {
+                    maxId = numericId;
+                }
+            });
+
+            let nextId = maxId + 1;
+            const usedIds = new Set(ids);
+            while (usedIds.has(`@${String(nextId).padStart(2, '0')}`)) {
+                nextId += 1;
+            }
+
+            return `@${String(nextId).padStart(2, '0')}`;
+        }
+
+        function saveLocalLearnedProduct(productName) {
+            const cleanProduct = productName.replace(/\s+/g, ' ').trim();
+            if (!cleanProduct) return;
+
+            const exists = productCatalog.some(item => normalizeSearchText(item) === normalizeSearchText(cleanProduct));
+            if (exists) return;
+
+            learnedProducts.push(cleanProduct);
+            productCatalog.push(cleanProduct);
+            localStorage.setItem(learnedProductsKey, JSON.stringify(learnedProducts));
+
+            suggestionIndexCache = productCatalog.map(catalogProduct => ({
+                product: catalogProduct,
+                normalized: normalizeSearchText(catalogProduct),
+                tokens: normalizeSearchText(catalogProduct).split(/\s+/).filter(Boolean)
+            }));
+            suggestionCache.clear();
+        }
+
+        async function saveProductToFirebase(productName) {
+            if (!firebaseDb || !productName) return;
+
+            const cleanProduct = productName.replace(/\s+/g, ' ').trim();
+            if (!cleanProduct) return;
+
+            const normalizedProduct = normalizeSearchText(cleanProduct);
+            const existingDoc = await firebaseDb.collection('learnedProducts').doc(normalizedProduct).get();
+            if (!existingDoc.exists) {
+                await firebaseDb.collection('learnedProducts').doc(normalizedProduct).set({
+                    name: cleanProduct,
+                    normalizedName: normalizedProduct,
+                    createdAt: new Date().toISOString()
+                });
+            }
+        }
+
+        async function saveClientToFirebase(clientName, clientId) {
+            if (!firebaseDb || !clientName) return;
+
+            const cleanName = clientName.replace(/\s+/g, ' ').trim();
+            const finalId = clientId || getNextClientId();
+            const normalizedClient = normalizeSearchText(cleanName);
+
+            const existingDoc = await firebaseDb.collection('learnedClients').doc(normalizedClient).get();
+            if (!existingDoc.exists) {
+                await firebaseDb.collection('learnedClients').doc(normalizedClient).set({
+                    name: cleanName,
+                    id: finalId,
+                    normalizedName: normalizedClient,
+                    createdAt: new Date().toISOString()
+                });
+            }
+        }
+
+        async function hydrateFirebaseCatalogs() {
+            if (!firebaseDb) return;
+
+            try {
+                const [clientsSnapshot, productsSnapshot] = await Promise.all([
+                    firebaseDb.collection('learnedClients').get(),
+                    firebaseDb.collection('learnedProducts').get()
+                ]);
+
+                clientsSnapshot.forEach(doc => {
+                    const client = doc.data();
+                    const name = typeof client?.name === 'string' ? client.name.trim() : '';
+                    const id = typeof client?.id === 'string' ? client.id.trim() : getNextClientId();
+                    if (!name) return;
+
+                    const exists = clientCatalog.some(item => normalizeSearchText(item.name) === normalizeSearchText(name));
+                    if (!exists) {
+                        clientCatalog.push({ name, id });
+                    }
+                });
+
+                productsSnapshot.forEach(doc => {
+                    const product = doc.data();
+                    const name = typeof product?.name === 'string' ? product.name.trim() : '';
+                    if (!name) return;
+
+                    const exists = productCatalog.some(item => normalizeSearchText(item) === normalizeSearchText(name));
+                    if (!exists) {
+                        productCatalog.push(name);
+                    }
+                });
+
+                if (productCatalog.length > 0) {
+                    suggestionIndexCache = productCatalog.map(catalogProduct => ({
+                        product: catalogProduct,
+                        normalized: normalizeSearchText(catalogProduct),
+                        tokens: normalizeSearchText(catalogProduct).split(/\s+/).filter(Boolean)
+                    }));
+                    suggestionCache.clear();
+                }
+            } catch (error) {
+                console.warn('No se pudo sincronizar Firebase para sugerencias:', error);
+            }
+        }
+
+        async function syncInitialCatalogs() {
+            if (!firebaseDb || !firebase.auth().currentUser) return;
+
+            const clients = [...new Map(clientCatalog.map(client => [
+                normalizeSearchText(client.name),
+                client
+            ])).values()];
+            const products = [...new Set(productCatalog.map(product => product.trim()).filter(Boolean))];
+            const writes = [
+                ...clients.map(client => ({
+                    collection: 'learnedClients',
+                    id: normalizeSearchText(client.name),
+                    data: {
+                        name: client.name,
+                        id: client.id,
+                        normalizedName: normalizeSearchText(client.name),
+                        createdAt: new Date().toISOString()
+                    }
+                })),
+                ...products.map(product => ({
+                    collection: 'learnedProducts',
+                    id: normalizeSearchText(product),
+                    data: {
+                        name: product,
+                        normalizedName: normalizeSearchText(product),
+                        createdAt: new Date().toISOString()
+                    }
+                }))
+            ];
+
+            for (let start = 0; start < writes.length; start += 450) {
+                const batch = firebaseDb.batch();
+                writes.slice(start, start + 450).forEach(write => {
+                    const reference = firebaseDb.collection(write.collection).doc(write.id);
+                    batch.set(reference, write.data, { merge: true });
+                });
+                await batch.commit();
+            }
+        }
+
         const suggestionsBox = document.createElement('div');
         suggestionsBox.className = 'product-suggestions';
         suggestionsBox.setAttribute('role', 'listbox');
@@ -3335,13 +3551,13 @@
         /*clientes*/ /*clientes*/ /*clientes*/
         /*clientes*/ /*clientes*/ /*clientes*/
         /*clientes*/ /*clientes*/ /*clientes*/
-        const clientCatalog = [
+        let clientCatalog = [
             { name: 'Cinthia', id: '@01' },
             { name: 'Walkiria', id: '@02' },
             { name: 'Equiproci', id: '@03' },
             { name: 'Kenny', id: '@04' },
             { name: 'Luis', id: '@05' },
-            { name: 'Mark', id: '@01' },
+            { name: 'Mark', id: '@06' },
             { name: 'Andres (Rudy 11)', id: '@07' },
             { name: 'Doctor Corccino (CoopUno)', id: '@08' },
             { name: 'Susana', id: '@09' },
@@ -3372,8 +3588,7 @@
             { name: 'Res. Amanda Luz', id: '@34' },
             { name: 'Res. Flager', id: '@35' },
             { name: 'Res. Green Tower', id: '@36' },
-            { name: 'Res. Claudette', id: '@37' },
-
+            { name: 'Res. Claudette', id: '@37' }
         ];
         const clientSuggestionsBox = document.createElement('div');
         clientSuggestionsBox.className = 'client-suggestions';
@@ -3428,6 +3643,40 @@
             );
         }
 
+        function setClientIdField(clientName, clientId) {
+            const clientField = document.querySelector('[data-client-field="true"]');
+            const idField = document.querySelector('[data-client-id-field="true"]');
+            if (!clientField || !idField) return;
+
+            if (normalizeSearchText(clientField.innerText) === normalizeSearchText(clientName)) {
+                idField.innerText = clientId;
+            }
+        }
+
+        async function ensureClientEntry(name, idOverride = null) {
+            const cleanName = (name || '').replace(/\s+/g, ' ').trim();
+            if (!cleanName) return null;
+
+            const existingClient = clientCatalog.find(client => normalizeSearchText(client.name) === normalizeSearchText(cleanName));
+            if (existingClient) {
+                setClientIdField(cleanName, existingClient.id);
+                return existingClient;
+            }
+
+            const generatedId = idOverride || getNextClientId();
+            const newClient = { name: cleanName, id: generatedId };
+            clientCatalog.push(newClient);
+            setClientIdField(cleanName, generatedId);
+
+            try {
+                await saveClientToFirebase(cleanName, generatedId);
+            } catch (error) {
+                console.warn('No se pudo guardar el cliente en Firebase:', error);
+            }
+
+            return newClient;
+        }
+
         function selectClient(client) {
             if (!activeClientField) return;
 
@@ -3472,27 +3721,18 @@
             box.style.width = `${width}px`;
         }
 
-        function normalizeSearchText(text = '') {
-            return text
-                .toLowerCase()
-                .normalize('NFD')
-                .replace(/[\u0300-\u036f]/g, '')
-                .replace(/[^a-z0-9]+/g, ' ')
-                .trim();
+        let suggestionIndexCache = productCatalog.map(product => ({
+            product,
+            normalized: normalizeSearchText(product),
+            tokens: normalizeSearchText(product).split(/\s+/).filter(Boolean)
+        }));
+        const suggestionCache = new Map();
+        let suggestionUsage = {};
+        try {
+            suggestionUsage = JSON.parse(localStorage.getItem('pineappleSuggestionUsage') || '{}');
+        } catch (error) {
+            localStorage.removeItem('pineappleSuggestionUsage');
         }
-
-            let suggestionIndexCache = productCatalog.map(product => ({
-                product,
-                normalized: normalizeSearchText(product),
-                tokens: normalizeSearchText(product).split(/\s+/).filter(Boolean)
-            }));
-            const suggestionCache = new Map();
-            let suggestionUsage = {};
-            try {
-                suggestionUsage = JSON.parse(localStorage.getItem('pineappleSuggestionUsage') || '{}');
-            } catch (error) {
-                localStorage.removeItem('pineappleSuggestionUsage');
-            }
 
         function rememberProduct(product) {
             const cleanProduct = product.replace(/\s+/g, ' ').trim();
@@ -3502,16 +3742,8 @@
             const existsInCatalog = suggestionIndexCache.some(item => item.normalized === normalizedProduct);
             if (existsInCatalog) return;
 
-            learnedProducts.push(cleanProduct);
-            productCatalog.push(cleanProduct);
-            localStorage.setItem(learnedProductsKey, JSON.stringify(learnedProducts));
-
-            suggestionIndexCache = productCatalog.map(catalogProduct => ({
-                product: catalogProduct,
-                normalized: normalizeSearchText(catalogProduct),
-                tokens: normalizeSearchText(catalogProduct).split(/\s+/).filter(Boolean)
-            }));
-            suggestionCache.clear();
+            saveLocalLearnedProduct(cleanProduct);
+            saveProductToFirebase(cleanProduct);
         }
 
         function editDistanceWithinLimit(first, second, limit) {
@@ -3734,12 +3966,24 @@
 
             if (event.key === 'Enter' || event.key === 'Tab') {
                 const selectedOption = options[clientSuggestionIndex];
-                if (!selectedOption) return;
-                event.preventDefault();
-                selectClient({
-                    name: selectedOption.getAttribute('data-client-name'),
-                    id: selectedOption.getAttribute('data-client-id')
-                });
+                if (selectedOption) {
+                    event.preventDefault();
+                    selectClient({
+                        name: selectedOption.getAttribute('data-client-name'),
+                        id: selectedOption.getAttribute('data-client-id')
+                    });
+                    return;
+                }
+
+                const typedClient = activeClientField.innerText.trim();
+                if (typedClient) {
+                    event.preventDefault();
+                    ensureClientEntry(typedClient).then(client => {
+                        if (client) {
+                            selectClient(client);
+                        }
+                    });
+                }
             }
 
             if (event.key === 'Escape') {
@@ -3802,6 +4046,17 @@
             if (isDescriptionCell(event.target)) {
                 rememberProduct(event.target.innerText);
             }
+
+            if (event.target.matches('[data-client-field="true"]')) {
+                const typedClient = event.target.innerText.trim();
+                if (!typedClient) return;
+
+                ensureClientEntry(typedClient).then(client => {
+                    if (client) {
+                        setClientIdField(client.name, client.id);
+                    }
+                });
+            }
         });
 
         ['gesturestart', 'gesturechange', 'gestureend'].forEach(function (eventName) {
@@ -3810,7 +4065,11 @@
             }, { passive: false });
         });
 
-        window.onload = function () {
+        window.onload = async function () {
+            await firebaseAuthReady;
+            await hydrateFirebaseCatalogs();
+            await syncInitialCatalogs();
+
             document.querySelectorAll('#table-body tr').forEach(row => {
                 const quantity = row.querySelector('.qty');
                 const price = row.querySelector('.price');
