@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pineapple-app-v22';
+const CACHE_NAME = 'pineapple-app-v24';
 const APP_FILES = ['./', './index.html', './style.css', './manifest.webmanifest'];
 
 self.addEventListener('install', event => {
@@ -24,15 +24,17 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
     if (event.request.method !== 'GET') return;
 
+    if (new URL(event.request.url).origin !== self.location.origin) return;
+
     event.respondWith(
-        fetch(event.request)
-            .then(response => {
-                if (event.request.url.startsWith(self.location.origin)) {
-                    const responseToCache = response.clone();
-                    caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseToCache));
-                }
+        caches.match(event.request).then(cachedResponse => {
+            const networkResponse = fetch(event.request).then(response => {
+                const responseToCache = response.clone();
+                caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseToCache));
                 return response;
-            })
-            .catch(() => caches.match(event.request))
+            });
+
+            return cachedResponse || networkResponse.catch(() => caches.match(event.request));
+        })
     );
 });

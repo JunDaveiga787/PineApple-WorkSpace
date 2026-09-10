@@ -82,10 +82,10 @@
                         <span class="meta-value" contenteditable="true">22/07/2026</span>
                         
                         <span class="meta-label">Cliente:</span>
-                        <span class="meta-value client-picker" contenteditable="true" data-client-field="true" role="combobox" aria-autocomplete="list" aria-expanded="false">Cinthia</span>
+                        <span class="meta-value client-picker" contenteditable="true" data-client-field="true" data-placeholder="Ej. Cinthia" role="combobox" aria-autocomplete="list" aria-expanded="false"></span>
                         
                         <span class="meta-label">ID Cliente:</span>
-                        <span class="meta-value client-id" contenteditable="true" data-client-id-field="true">@01</span>
+                        <span class="meta-value client-id" data-client-id-field="true" data-placeholder="Automático" aria-readonly="true"></span>
                     </div>
                 </div>
             </div>
@@ -167,46 +167,32 @@
         </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
-        const firebaseConfig = window.PINEAPPLE_FIREBASE_CONFIG || {
-            apiKey: 'AIzaSyB0FfTSia8wOEFyggZbmt334bfUkHkkQbU',
-            authDomain: 'pineapple-work-space.firebaseapp.com',
-            databaseURL: 'https://pineapple-work-space-default-rtdb.firebaseio.com',
-            projectId: 'pineapple-work-space',
-            storageBucket: 'pineapple-work-space.firebasestorage.app',
-            messagingSenderId: '865951896293',
-            appId: '1:865951896293:web:58283a7478a297d9e67a0c',
-            measurementId: 'G-54Z5ZWDGQF'
-        };
+        const HOSTINGER_CLIENTS_API = 'https://cornflowerblue-beaver-995948.hostingersite.com/api/clientes.php';
+        const HOSTINGER_PRODUCTS_API = 'https://cornflowerblue-beaver-995948.hostingersite.com/api/productos.php';
 
-        const hasFirebaseConfig = !!firebaseConfig && !!firebaseConfig.projectId && !String(firebaseConfig.projectId).includes('YOUR_');
-        let firebaseDb = null;
-        let firebaseAuthReady = Promise.resolve();
+        const externalScriptPromises = new Map();
 
-        if (hasFirebaseConfig && window.firebase && !firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
+        function loadExternalScript(url) {
+            if (externalScriptPromises.has(url)) return externalScriptPromises.get(url);
+
+            const promise = new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = url;
+                script.onload = resolve;
+                script.onerror = () => reject(new Error(`No se pudo cargar ${url}`));
+                document.head.appendChild(script);
+            });
+
+            externalScriptPromises.set(url, promise);
+            return promise;
         }
 
-        if (hasFirebaseConfig && firebase.apps.length) {
-            firebaseDb = firebase.firestore();
-        }
-
-        if (firebase.apps.length && firebase.auth) {
-            const firebaseAuth = firebase.auth();
-            firebaseAuthReady = firebaseAuth.signInAnonymously()
-                .then(() => {
-                    console.log('Autenticado anónimamente');
-                    return firebaseAuth.currentUser;
-                })
-                .catch(error => {
-                    console.error('Error de autenticación:', error);
-                    return null;
-                });
+        async function ensurePdfLibraries() {
+            await Promise.all([
+                loadExternalScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'),
+                loadExternalScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js')
+            ]);
         }
 
         function parseVal(str) {
@@ -266,6 +252,8 @@
                 codeInput.dispatchEvent(new Event('input', { bubbles: true }));
             });
 
+            codeInput.focus({ preventScroll: true });
+
             form.addEventListener('submit', event => {
                 event.preventDefault();
                 if (!/^[1-9]{1,6}$/.test(codeInput.value)) {
@@ -312,6 +300,8 @@
         }
 
         async function createPdfFile() {
+            await ensurePdfLibraries();
+
             const page = document.querySelector('.page');
             const exportPage = page.cloneNode(true);
 
@@ -3412,123 +3402,119 @@
             suggestionCache.clear();
         }
 
-        async function saveProductToFirebase(productName) {
-            if (!firebaseDb || !productName) return;
+        async function saveProductToHostinger(products) {
+            const productList = (Array.isArray(products) ? products : [products])
+                .map(product => product.replace(/\s+/g, ' ').trim())
+                .filter(Boolean);
+            if (!productList.length) return;
 
-            const cleanProduct = productName.replace(/\s+/g, ' ').trim();
-            if (!cleanProduct) return;
+            const response = await fetch(HOSTINGER_PRODUCTS_API, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ products: productList })
+            });
 
-            const normalizedProduct = normalizeSearchText(cleanProduct);
-            const existingDoc = await firebaseDb.collection('learnedProducts').doc(normalizedProduct).get();
-            if (!existingDoc.exists) {
-                await firebaseDb.collection('learnedProducts').doc(normalizedProduct).set({
-                    name: cleanProduct,
-                    normalizedName: normalizedProduct,
-                    createdAt: new Date().toISOString()
-                });
-            }
+            if (!response.ok) throw new Error(`Hostinger respondió con ${response.status}`);
         }
 
-        async function saveClientToFirebase(clientName, clientId) {
-            if (!firebaseDb || !clientName) return;
+        async function saveClientToHostinger(clientName, clientId) {
+            if (!clientName) return;
 
             const cleanName = clientName.replace(/\s+/g, ' ').trim();
             const finalId = clientId || getNextClientId();
-            const normalizedClient = normalizeSearchText(cleanName);
 
-            const existingDoc = await firebaseDb.collection('learnedClients').doc(normalizedClient).get();
-            if (!existingDoc.exists) {
-                await firebaseDb.collection('learnedClients').doc(normalizedClient).set({
-                    name: cleanName,
-                    id: finalId,
-                    normalizedName: normalizedClient,
-                    createdAt: new Date().toISOString()
-                });
+            const response = await fetch(HOSTINGER_CLIENTS_API, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: cleanName, id: finalId })
+            });
+
+            if (!response.ok) throw new Error(`Hostinger respondió con ${response.status}`);
+        }
+
+        function mergeFirebaseClients(clientsSnapshot) {
+            const clientsByName = new Map(clientCatalog.map(client => [
+                normalizeSearchText(client.name),
+                client
+            ]));
+
+            clientsSnapshot.forEach(doc => {
+                const client = doc.data();
+                const name = typeof client?.name === 'string' ? client.name.trim() : '';
+                const id = typeof client?.id === 'string' ? client.id.trim() : '';
+                if (!name || !id) return;
+
+                clientsByName.set(normalizeSearchText(name), { name, id });
+            });
+
+            clientCatalog = [...clientsByName.values()];
+
+            if (activeClientField) {
+                showClientSuggestions(activeClientField);
+            }
+        }
+
+        function mergeHostingerClients(clients) {
+            const clientsByName = new Map(clientCatalog.map(client => [
+                normalizeSearchText(client.name),
+                client
+            ]));
+
+            clients.forEach(client => {
+                const name = typeof client?.name === 'string' ? client.name.trim() : '';
+                const id = typeof client?.id === 'string' ? client.id.trim() : '';
+                if (name && id) clientsByName.set(normalizeSearchText(name), { name, id });
+            });
+
+            clientCatalog = [...clientsByName.values()];
+            if (activeClientField) showClientSuggestions(activeClientField);
+        }
+
+        async function fetchWithTimeout(url, options = {}, timeout = 5000) {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+            try {
+                return await fetch(url, { ...options, signal: controller.signal });
+            } finally {
+                clearTimeout(timeoutId);
             }
         }
 
         async function hydrateFirebaseCatalogs() {
-            if (!firebaseDb) return;
-
             try {
-                const [clientsSnapshot, productsSnapshot] = await Promise.all([
-                    firebaseDb.collection('learnedClients').get(),
-                    firebaseDb.collection('learnedProducts').get()
+                const [clientsResponse, productsResponse] = await Promise.all([
+                    fetchWithTimeout(HOSTINGER_CLIENTS_API),
+                    fetchWithTimeout(HOSTINGER_PRODUCTS_API)
                 ]);
+                if (!clientsResponse.ok) throw new Error(`Hostinger respondió con ${clientsResponse.status}`);
+                mergeHostingerClients(await clientsResponse.json());
 
-                clientsSnapshot.forEach(doc => {
-                    const client = doc.data();
-                    const name = typeof client?.name === 'string' ? client.name.trim() : '';
-                    const id = typeof client?.id === 'string' ? client.id.trim() : getNextClientId();
-                    if (!name) return;
+                if (!productsResponse.ok) throw new Error(`Hostinger respondió con ${productsResponse.status}`);
+                const remoteProducts = await productsResponse.json();
+                const remoteProductNames = remoteProducts
+                    .map(product => typeof product?.name === 'string' ? product.name.trim() : '')
+                    .filter(Boolean);
 
-                    const exists = clientCatalog.some(item => normalizeSearchText(item.name) === normalizeSearchText(name));
-                    if (!exists) {
-                        clientCatalog.push({ name, id });
-                    }
+                const catalogNames = new Set(productCatalog.map(item => normalizeSearchText(item)));
+                remoteProductNames.forEach(name => {
+                    const normalizedName = normalizeSearchText(name);
+                    if (catalogNames.has(normalizedName)) return;
+
+                    catalogNames.add(normalizedName);
+                    productCatalog.push(name);
                 });
 
-                productsSnapshot.forEach(doc => {
-                    const product = doc.data();
-                    const name = typeof product?.name === 'string' ? product.name.trim() : '';
-                    if (!name) return;
-
-                    const exists = productCatalog.some(item => normalizeSearchText(item) === normalizeSearchText(name));
-                    if (!exists) {
-                        productCatalog.push(name);
-                    }
-                });
-
-                if (productCatalog.length > 0) {
-                    suggestionIndexCache = productCatalog.map(catalogProduct => ({
-                        product: catalogProduct,
-                        normalized: normalizeSearchText(catalogProduct),
-                        tokens: normalizeSearchText(catalogProduct).split(/\s+/).filter(Boolean)
-                    }));
-                    suggestionCache.clear();
+                if (!remoteProductNames.length && productCatalog.length) {
+                    saveProductToHostinger(productCatalog).catch(error => {
+                        console.warn('No se pudo subir el catálogo inicial a Hostinger:', error);
+                    });
                 }
+
+                suggestionIndexCache = [];
+                suggestionCache.clear();
             } catch (error) {
                 console.warn('No se pudo sincronizar Firebase para sugerencias:', error);
-            }
-        }
-
-        async function syncInitialCatalogs() {
-            if (!firebaseDb || !firebase.auth().currentUser) return;
-
-            const clients = [...new Map(clientCatalog.map(client => [
-                normalizeSearchText(client.name),
-                client
-            ])).values()];
-            const products = [...new Set(productCatalog.map(product => product.trim()).filter(Boolean))];
-            const writes = [
-                ...clients.map(client => ({
-                    collection: 'learnedClients',
-                    id: normalizeSearchText(client.name),
-                    data: {
-                        name: client.name,
-                        id: client.id,
-                        normalizedName: normalizeSearchText(client.name),
-                        createdAt: new Date().toISOString()
-                    }
-                })),
-                ...products.map(product => ({
-                    collection: 'learnedProducts',
-                    id: normalizeSearchText(product),
-                    data: {
-                        name: product,
-                        normalizedName: normalizeSearchText(product),
-                        createdAt: new Date().toISOString()
-                    }
-                }))
-            ];
-
-            for (let start = 0; start < writes.length; start += 450) {
-                const batch = firebaseDb.batch();
-                writes.slice(start, start + 450).forEach(write => {
-                    const reference = firebaseDb.collection(write.collection).doc(write.id);
-                    batch.set(reference, write.data, { merge: true });
-                });
-                await batch.commit();
             }
         }
 
@@ -3597,6 +3583,7 @@
 
         let activeSuggestionCell = null;
         let suggestionIndex = -1;
+        let productSuggestionTimer = null;
         let activeClientField = null;
         let clientSuggestionIndex = -1;
 
@@ -3669,9 +3656,9 @@
             setClientIdField(cleanName, generatedId);
 
             try {
-                await saveClientToFirebase(cleanName, generatedId);
+                await saveClientToHostinger(cleanName, generatedId);
             } catch (error) {
-                console.warn('No se pudo guardar el cliente en Firebase:', error);
+                console.warn('No se pudo guardar el cliente en Hostinger:', error);
             }
 
             return newClient;
@@ -3701,11 +3688,23 @@
 
             activeClientField = field;
             clientSuggestionIndex = 0;
-            clientSuggestionsBox.innerHTML = matches.map((client, index) => `
-                <button class="client-suggestion${index === 0 ? ' is-selected' : ''}" type="button" role="option" data-client-name="${client.name}" data-client-id="${client.id}">
-                    <span>${client.name}</span><span class="client-suggestion-id">${client.id}</span>
-                </button>
-            `).join('');
+            clientSuggestionsBox.innerHTML = '';
+            matches.forEach((client, index) => {
+                const option = document.createElement('button');
+                option.className = `client-suggestion${index === 0 ? ' is-selected' : ''}`;
+                option.type = 'button';
+                option.setAttribute('role', 'option');
+                option.dataset.clientName = client.name;
+                option.dataset.clientId = client.id;
+
+                const name = document.createElement('span');
+                name.textContent = client.name;
+                const id = document.createElement('span');
+                id.className = 'client-suggestion-id';
+                id.textContent = client.id;
+                option.append(name, id);
+                clientSuggestionsBox.appendChild(option);
+            });
             clientSuggestionsBox.style.display = 'block';
             field.setAttribute('aria-expanded', 'true');
             positionSuggestionsBoxFor(field, clientSuggestionsBox);
@@ -3721,11 +3720,7 @@
             box.style.width = `${width}px`;
         }
 
-        let suggestionIndexCache = productCatalog.map(product => ({
-            product,
-            normalized: normalizeSearchText(product),
-            tokens: normalizeSearchText(product).split(/\s+/).filter(Boolean)
-        }));
+        let suggestionIndexCache = [];
         const suggestionCache = new Map();
         let suggestionUsage = {};
         try {
@@ -3734,7 +3729,19 @@
             localStorage.removeItem('pineappleSuggestionUsage');
         }
 
+        function ensureSuggestionIndex() {
+            if (suggestionIndexCache.length === productCatalog.length) return;
+
+            suggestionIndexCache = productCatalog.map(product => ({
+                product,
+                normalized: normalizeSearchText(product),
+                tokens: normalizeSearchText(product).split(/\s+/).filter(Boolean)
+            }));
+            suggestionCache.clear();
+        }
+
         function rememberProduct(product) {
+            ensureSuggestionIndex();
             const cleanProduct = product.replace(/\s+/g, ' ').trim();
             const normalizedProduct = normalizeSearchText(cleanProduct);
             if (normalizedProduct.length < 3) return;
@@ -3743,7 +3750,9 @@
             if (existsInCatalog) return;
 
             saveLocalLearnedProduct(cleanProduct);
-            saveProductToFirebase(cleanProduct);
+            saveProductToHostinger(cleanProduct).catch(error => {
+                console.warn('No se pudo guardar el producto en Hostinger:', error);
+            });
         }
 
         function editDistanceWithinLimit(first, second, limit) {
@@ -3780,7 +3789,7 @@
                 if (productWord === expandedWord) bestScore = Math.max(bestScore, 120);
                 else if (productWord.startsWith(expandedWord)) bestScore = Math.max(bestScore, 100);
                 else if (productWord.includes(expandedWord)) bestScore = Math.max(bestScore, 78);
-                else if (expandedWord.length >= 3) {
+                else if (expandedWord.length >= 4) {
                     const limit = expandedWord.length >= 7 ? 2 : 1;
                     const distance = editDistanceWithinLimit(expandedWord, productWord, limit);
                     if (distance <= limit) bestScore = Math.max(bestScore, 72 - distance * 14);
@@ -3792,7 +3801,7 @@
 
         function getSmartSuggestions(query) {
             const normalizedQuery = normalizeSearchText(query);
-            if (!normalizedQuery) return [];
+            if (normalizedQuery.length < 2) return [];
 
             const cached = suggestionCache.get(normalizedQuery);
             if (cached) return cached;
@@ -3847,6 +3856,15 @@
             return matches;
         }
 
+        function getQuickProductSuggestions(query) {
+            const normalizedQuery = normalizeSearchText(query);
+            if (normalizedQuery.length < 2) return [];
+
+            return productCatalog
+                .filter(product => normalizeSearchText(product).includes(normalizedQuery))
+                .slice(0, 10);
+        }
+
         function selectSuggestion(product) {
             if (!activeSuggestionCell) return;
 
@@ -3867,7 +3885,9 @@
 
         function showProductSuggestions(cell) {
             const query = cell.innerText.trim();
-            const matches = getSmartSuggestions(query);
+            const matches = suggestionIndexCache.length === productCatalog.length
+                ? getSmartSuggestions(query)
+                : getQuickProductSuggestions(query);
 
             if (!matches.length) {
                 hideProductSuggestions();
@@ -3886,7 +3906,11 @@
 
         document.addEventListener('input', function (event) {
             if (isDescriptionCell(event.target)) {
-                showProductSuggestions(event.target);
+                clearTimeout(productSuggestionTimer);
+                const cell = event.target;
+                productSuggestionTimer = setTimeout(() => {
+                    if (cell.isConnected) showProductSuggestions(cell);
+                }, 100);
             }
 
             if (event.target.matches('[data-client-field="true"]')) {
@@ -3897,6 +3921,17 @@
         document.addEventListener('focusin', function (event) {
             if (event.target.matches('[data-client-field="true"]')) {
                 showClientSuggestions(event.target);
+            }
+        });
+
+        document.addEventListener('focusout', function (event) {
+            if (!event.target.matches('[data-client-field="true"]')) return;
+
+            const typedClient = event.target.innerText.trim();
+            if (typedClient) {
+                ensureClientEntry(typedClient).then(client => {
+                    if (client) setClientIdField(client.name, client.id);
+                });
             }
         });
 
@@ -3954,6 +3989,18 @@
             if (!activeClientField) return;
 
             const options = [...clientSuggestionsBox.querySelectorAll('.client-suggestion')];
+
+            if ((event.key === 'Enter' || event.key === 'Tab') && !options.length) {
+                const typedClient = activeClientField.innerText.trim();
+                if (typedClient) {
+                    event.preventDefault();
+                    ensureClientEntry(typedClient).then(client => {
+                        if (client) selectClient(client);
+                    });
+                }
+                return;
+            }
+
             if (!options.length) return;
 
             if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
@@ -4065,11 +4112,7 @@
             }, { passive: false });
         });
 
-        window.onload = async function () {
-            await firebaseAuthReady;
-            await hydrateFirebaseCatalogs();
-            await syncInitialCatalogs();
-
+        function initializeDocument() {
             document.querySelectorAll('#table-body tr').forEach(row => {
                 const quantity = row.querySelector('.qty');
                 const price = row.querySelector('.price');
@@ -4079,12 +4122,25 @@
                 }
             });
             updateGrandTotal();
-        };
+
+            setTimeout(() => {
+                hydrateFirebaseCatalogs();
+            }, 0);
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeDocument, { once: true });
+        } else {
+            initializeDocument();
+        }
 
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function () {
-                navigator.serviceWorker.register('./sw.js?v=22');
-            });
+            const registerServiceWorker = () => navigator.serviceWorker.register('./sw.js?v=24');
+            if ('requestIdleCallback' in window) {
+                window.requestIdleCallback(registerServiceWorker, { timeout: 2000 });
+            } else {
+                setTimeout(registerServiceWorker, 1000);
+            }
         }
 
 
