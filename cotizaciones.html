@@ -309,10 +309,6 @@
         async function downloadPdf() {
             closeExportMenu();
 
-            // Primero: guardar el documento y abrir su carpeta en el dashboard.
-            // No dependemos de que el PDF se genere para no dejar al usuario esperando.
-            const openFolder = saveAndOpenClientFolder();
-
             try {
                 // Garantizamos que el documento esté guardado en la base de datos
                 // antes de descargarlo.
@@ -332,8 +328,6 @@
             } catch (error) {
                 window.print();
             }
-
-            await openFolder;
         }
 
         function getShareMessage() {
@@ -360,10 +354,6 @@
 
         async function sharePdf() {
             closeExportMenu();
-
-            // Primero: guardar el documento y abrir su carpeta en el dashboard,
-            // de forma independiente a que el PDF llegue a generarse.
-            const openFolder = saveAndOpenClientFolder();
             setDocStatus('Generando vista previa...');
 
             try {
@@ -398,8 +388,6 @@
                 }
                 setDocStatus('Error al generar PDF');
             }
-
-            await openFolder;
         }
 
         function closePdfPreview() {
