@@ -1763,7 +1763,27 @@ button,
     .modal-footer .btn {
         flex: 1;
         min-width: 30%;
-        font-size: 11px;
-        padding: 0 8px;
+        font-size: 13px;
+        padding: 8px 12px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        white-space: normal;
+        line-height: 1.2;
     }
+    .modal-footer .btn svg {
+        flex-shrink: 0;
+    }
+}
+
+.modal-footer .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.modal-footer .btn svg {
+    flex-shrink: 0;
 }
