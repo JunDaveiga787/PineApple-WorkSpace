@@ -1,0 +1,30 @@
+{
+    "rules": [
+        {
+            "pattern": "PineApple",
+            "targetFiles": [
+                "index.html",
+                "dashboard.css",
+                "dashboard.js"
+            ],
+            "description": "Dashboard (pantalla inicial) donde se guardan las cotizaciones y facturas por carpeta de cliente."
+        },
+        {
+            "pattern": "PineApple Multiservice",
+            "targetFiles": [
+                "cotizaciones.html",
+                "style.css"
+            ],
+            "description": "Cotizador / facturador editable de PineApple Multiservice."
+        },
+        {
+            "pattern": "PineApple Carpeta",
+            "targetFiles": [
+                "carpeta.html",
+                "carpeta.css",
+                "carpeta.js"
+            ],
+            "description": "Vista de la carpeta de un cliente con todas sus cotizaciones y previsualizaciones."
+        }
+    ]
+}

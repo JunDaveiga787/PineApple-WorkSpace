@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#f5f5f7">
+    <title>Carpeta del cliente | PineApple Work Center</title>
+    <link rel="icon" type="image/png" sizes="512x512" href="https://res.cloudinary.com/nox-company/image/upload/v1788821914/PineApple%20Service%20Media/ChatGPT_Image_Sep_7_2026_06_30_53_PM-Photoroom_tip3f5.png?v=19">
+    <link rel="stylesheet" href="dashboard.css?v=10">
+    <link rel="stylesheet" href="carpeta.css?v=2">
+</head>
+<body class="folder-body">
+
+    <div class="dash-shell">
+        <header class="dash-topbar">
+            <div class="dash-brand">
+                <button class="folder-back" type="button" id="folder-back" aria-label="Volver al dashboard">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M14.5 6L8.5 12l6 6"/>
+                    </svg>
+                    <span>Dashboard</span>
+                </button>
+                <div class="dash-brand-text">
+                    <span class="dash-brand-name" id="folder-title">Carpeta del cliente</span>
+                    <span class="dash-brand-sub">
+                        <span class="dash-dot"></span>
+                        <span id="folder-subtitle">Cargando cotizaciones…</span>
+                    </span>
+                </div>
+            </div>
+            <div class="dash-topbar-actions">
+                <span class="db-state" id="db-state" hidden>Conectando con la base de datos…</span>
+                <button class="btn" type="button" id="folder-new">
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+                        <path d="M12 6v12M6 12h12"/>
+                    </svg>
+                    Nueva cotización
+                </button>
+            </div>
+        </header>
+
+        <section class="folder-summary" id="folder-summary" aria-label="Resumen del cliente"></section>
+
+        <div class="folder-layout">
+            <aside class="folder-list" id="folder-list" aria-label="Cotizaciones guardadas"></aside>
+
+            <section class="folder-preview" id="folder-preview" aria-label="Previsualización">
+                <div class="preview-empty">
+                    <span class="preview-empty-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4"/><path d="M9 12h7M9 16h5"/>
+                        </svg>
+                    </span>
+                    <h2>Selecciona un documento</h2>
+                    <p>Elige una cotización de la lista para ver su previsualización completa.</p>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <div class="toast-stack" id="toast-stack" aria-live="polite" hidden></div>
+
+    <script src="db.js?v=11"></script>
+    <script src="storage.js?v=11"></script>
+    <script src="carpeta.js?v=2"></script>
+</body>
+</html>

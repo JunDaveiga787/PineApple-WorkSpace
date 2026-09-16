@@ -1,0 +1,415 @@
+/* PineApple Work Center — vista de carpeta de un cliente */
+
+.folder-body {
+	min-width: 320px;
+	margin: 0;
+	padding: 28px 20px 110px;
+	overflow-x: hidden;
+	color: var(--ink);
+	background:
+		radial-gradient(circle at 15% 0%, rgba(255, 255, 255, 0.95), transparent 32%),
+		var(--canvas);
+	font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	-webkit-font-smoothing: antialiased;
+}
+
+.folder-back {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	padding: 0 14px 0 10px;
+	height: 38px;
+	border: 1px solid rgba(0, 0, 0, 0.07);
+	border-radius: 999px;
+	color: var(--ink);
+	background: #fff;
+	box-shadow: 0 4px 12px rgba(29, 29, 31, 0.06);
+	font: inherit;
+	font-size: 12px;
+	font-weight: 600;
+	white-space: nowrap;
+	cursor: pointer;
+	flex: 0 0 auto;
+	transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.folder-back:hover {
+	transform: translateX(-2px);
+	border-color: rgba(168, 85, 247, 0.4);
+	box-shadow: 0 8px 18px rgba(123, 74, 227, 0.16);
+}
+
+/* ---------- Resumen del cliente ---------- */
+.folder-summary {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+	gap: 14px;
+	margin-bottom: 18px;
+}
+
+.folder-metric {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	padding: 16px 18px;
+	border: 1px solid rgba(0, 0, 0, 0.05);
+	border-radius: 18px;
+	background: #fff;
+	box-shadow: 0 12px 30px rgba(29, 29, 31, 0.06);
+}
+
+.folder-metric-label {
+	color: var(--muted);
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.3px;
+	text-transform: uppercase;
+}
+
+.folder-metric-value {
+	font-size: 22px;
+	font-weight: 700;
+	letter-spacing: -0.6px;
+}
+
+.folder-metric.is-money .folder-metric-value {
+	color: var(--secondary);
+}
+
+/* ---------- Distribución lista + previsualización ---------- */
+.folder-layout {
+	display: grid;
+	grid-template-columns: minmax(0, 360px) minmax(0, 1fr);
+	gap: 18px;
+	align-items: start;
+}
+
+/* ---------- Lista de cotizaciones ---------- */
+.folder-list {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 10px;
+	max-height: calc(100vh - 250px);
+	overflow-y: auto;
+	overflow-x: hidden;
+	padding-right: 4px;
+}
+
+.folder-list::-webkit-scrollbar {
+	width: 8px;
+}
+
+.folder-list::-webkit-scrollbar-thumb {
+	border-radius: 999px;
+	background: rgba(0, 0, 0, 0.12);
+}
+
+.folder-item {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	width: 100%;
+	max-width: 100%;
+	min-width: 0;
+	padding: 13px 14px;
+	border: 1px solid rgba(0, 0, 0, 0.05);
+	border-radius: 16px;
+	background: #fff;
+	box-shadow: 0 8px 22px rgba(29, 29, 31, 0.05);
+	cursor: pointer;
+	text-align: left;
+	box-sizing: border-box;
+	overflow: hidden;
+	transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+}
+
+.folder-item:hover {
+	transform: translateY(-1px);
+	border-color: rgba(168, 85, 247, 0.3);
+	box-shadow: 0 14px 30px rgba(123, 74, 227, 0.14);
+}
+
+.folder-item.is-active {
+	border-color: rgba(168, 85, 247, 0.55);
+	background: linear-gradient(150deg, #fbf7ff 0%, #ffffff 70%);
+	box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.14), 0 12px 26px rgba(29, 29, 31, 0.07);
+}
+
+.folder-item-icon {
+	display: grid;
+	place-items: center;
+	width: 38px;
+	height: 38px;
+	border-radius: 11px;
+	color: #6b4bd6;
+	background: rgba(168, 85, 247, 0.12);
+	flex: 0 0 38px;
+}
+
+.folder-item-main {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+	min-width: 0;
+	flex: 1 1 auto;
+	overflow: hidden;
+}
+
+.folder-item-name {
+	font-size: 13px;
+	font-weight: 700;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 100%;
+}
+
+.folder-item-meta {
+	color: var(--muted);
+	font-size: 11px;
+	font-weight: 600;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.folder-item-total {
+	color: var(--secondary-dark);
+	font-size: 13px;
+	font-weight: 700;
+	white-space: nowrap;
+	flex: 0 0 auto;
+}
+
+/* ---------- Previsualización ---------- */
+.folder-preview {
+	position: sticky;
+	top: 24px;
+	min-height: 420px;
+	padding: 22px;
+	border: 1px solid rgba(0, 0, 0, 0.05);
+	border-radius: 22px;
+	background: #fff;
+	box-shadow: 0 16px 40px rgba(29, 29, 31, 0.08);
+}
+
+.preview-empty {
+	display: grid;
+	gap: 8px;
+	place-items: center;
+	padding: 60px 20px;
+	color: var(--muted);
+	text-align: center;
+}
+
+.preview-empty-icon {
+	font-size: 40px;
+}
+
+.preview-empty h2 {
+	margin: 0;
+	color: var(--ink);
+	font-size: 17px;
+}
+
+.preview-empty p {
+	margin: 0;
+	font-size: 13px;
+}
+
+/* Documento previsualizado (estilo hoja de cotización) */
+.preview-doc {
+	display: grid;
+	gap: 16px;
+}
+
+.preview-head {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 16px;
+	padding-bottom: 14px;
+	border-bottom: 1px solid var(--line);
+}
+
+.preview-brand {
+	display: flex;
+	align-items: center;
+	gap: 11px;
+}
+
+.preview-logo {
+	width: 38px;
+	height: 38px;
+	padding: 3px;
+	border-radius: 12px;
+	background: #fff;
+	object-fit: contain;
+	box-shadow: 0 6px 16px rgba(29, 29, 31, 0.12);
+}
+
+.preview-brand-name {
+	font-size: 14px;
+	font-weight: 700;
+}
+
+.preview-brand-sub {
+	color: var(--muted);
+	font-size: 11px;
+	font-weight: 600;
+}
+
+.preview-type {
+	display: inline-flex;
+	align-items: center;
+	padding: 6px 14px;
+	border-radius: 999px;
+	color: #fff;
+	background: linear-gradient(135deg, #bb7df6 0%, #7a3fe2 100%);
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.4px;
+	text-transform: uppercase;
+	white-space: nowrap;
+}
+
+.preview-type.is-invoice {
+	background: linear-gradient(135deg, #4fa3ff 0%, #0071e3 100%);
+}
+
+.preview-meta {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+	gap: 12px;
+}
+
+.preview-meta-item {
+	display: grid;
+	gap: 3px;
+}
+
+.preview-meta-item dt {
+	color: var(--muted);
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: 0.3px;
+	text-transform: uppercase;
+}
+
+.preview-meta-item dd {
+	margin: 0;
+	font-size: 13px;
+	font-weight: 600;
+}
+
+.preview-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 12px;
+	table-layout: fixed;
+}
+
+.preview-table th {
+	padding: 9px 8px;
+	border-bottom: 1px solid var(--line);
+	color: var(--muted);
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: 0.3px;
+	text-align: left;
+	text-transform: uppercase;
+}
+
+.preview-table th.num,
+.preview-table td.num {
+	text-align: right;
+}
+
+.preview-table td {
+	padding: 10px 8px;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+	vertical-align: top;
+	word-wrap: break-word;
+}
+
+.preview-table td.num {
+	white-space: nowrap;
+}
+
+.preview-total-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-top: 4px;
+	padding: 14px 16px;
+	border-radius: 14px;
+	background: linear-gradient(135deg, #f7f2ff 0%, #fdfbff 100%);
+}
+
+.preview-total-label {
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.3px;
+	text-transform: uppercase;
+}
+
+.preview-total-value {
+	color: var(--secondary);
+	font-size: 20px;
+	font-weight: 700;
+	letter-spacing: -0.5px;
+}
+
+.preview-actions {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+	gap: 8px;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+	.folder-layout {
+		grid-template-columns: 1fr;
+	}
+
+	.folder-list {
+		max-height: none;
+	}
+
+	.folder-preview {
+		position: static;
+		min-height: 0;
+	}
+}
+
+@media (max-width: 640px) {
+	.folder-body {
+		padding: 16px 12px 90px;
+	}
+
+	.dash-topbar {
+		position: static;
+		flex-direction: column;
+		align-items: stretch;
+		gap: 12px;
+		padding: 14px;
+	}
+
+	.dash-topbar-actions {
+		justify-content: stretch;
+	}
+
+	.dash-topbar-actions .btn {
+		flex: 1;
+	}
+
+	.folder-preview {
+		padding: 16px;
+	}
+
+	.folder-summary {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}}
+
+
+	
