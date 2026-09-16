@@ -141,6 +141,27 @@
         </div>
     </div>
 
+    <!-- Modal Preview PDF -->
+    <div id="pdf-preview-modal" class="modal-overlay" hidden>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Previsualización de PDF</h2>
+                <button class="close-btn" onclick="closePdfPreview()" aria-label="Cerrar">&times;</button>
+            </div>
+            <div class="modal-body">
+                <iframe id="pdf-preview-iframe" src="" frameborder="0"></iframe>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="sharePdfNative()">
+                    <span aria-hidden="true">📤</span> Compartir (WhatsApp / Otras)
+                </button>
+                <button type="button" class="btn" onclick="downloadPdfFromPreview()">
+                    <span aria-hidden="true">↓</span> Descargar
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script src="db.js?v=11"></script>
     <script src="storage.js?v=11"></script>
     <script>
@@ -333,12 +354,17 @@
             return `Hola, te comparto esta ${documentType.toLowerCase()} de PineApple Multiservice.${client ? `\nCliente: ${client}` : ''}${rows.length ? `\n\n${rows.join('\n')}` : ''}\n\nTotal: ${total}`;
         }
 
+        let currentPdfBlob = null;
+        let currentPdfFileName = '';
+        let currentShareMessage = '';
+
         async function sharePdf() {
             closeExportMenu();
 
             // Primero: guardar el documento y abrir su carpeta en el dashboard,
             // de forma independiente a que el PDF llegue a generarse.
             const openFolder = saveAndOpenClientFolder();
+            setDocStatus('Generando vista previa...');
 
             try {
                 // Garantizamos que el documento esté guardado en la base de datos
@@ -349,35 +375,68 @@
                     console.warn('No se pudo guardar antes de compartir:', error);
                 }
 
-                const pdfBlob = await createPdfFile();
-                const pdfFileName = getPdfFileName();
-                const pdfFile = new File([pdfBlob], pdfFileName, { type: 'application/pdf' });
-                const message = getShareMessage();
-                const canShareFiles = navigator.share && (!navigator.canShare || navigator.canShare({ files: [pdfFile] }));
+                currentPdfBlob = await createPdfFile();
+                currentPdfFileName = getPdfFileName();
+                currentShareMessage = getShareMessage();
 
-                if (canShareFiles) {
-                    await navigator.share({
-                        files: [pdfFile],
-                        title: pdfFileName.replace(/\.pdf$/i, ''),
-                        text: message
-                    });
-                    return;
+                // Mostrar el modal
+                const modal = document.getElementById('pdf-preview-modal');
+                const iframe = document.getElementById('pdf-preview-iframe');
+                
+                if (iframe.src) {
+                    URL.revokeObjectURL(iframe.src);
                 }
-
-                const downloadUrl = URL.createObjectURL(pdfBlob);
-                const link = document.createElement('a');
-                link.href = downloadUrl;
-                link.download = pdfFileName;
-                link.click();
-                URL.revokeObjectURL(downloadUrl);
-                window.alert('Tu navegador no permite compartir archivos directamente. El PDF fue descargado para que puedas compartirlo desde tu teléfono.');
+                
+                const url = URL.createObjectURL(currentPdfBlob);
+                iframe.src = url;
+                modal.hidden = false;
+                
+                setDocStatus('Vista previa generada');
             } catch (error) {
                 if (error.name !== 'AbortError') {
                     window.alert('No se pudo generar el PDF. Intenta nuevamente.');
                 }
+                setDocStatus('Error al generar PDF');
             }
 
             await openFolder;
+        }
+
+        function closePdfPreview() {
+            const modal = document.getElementById('pdf-preview-modal');
+            modal.hidden = true;
+        }
+
+        async function sharePdfNative() {
+            if (!currentPdfBlob) return;
+            const pdfFile = new File([currentPdfBlob], currentPdfFileName, { type: 'application/pdf' });
+            
+            try {
+                const canShareFiles = navigator.share && (!navigator.canShare || navigator.canShare({ files: [pdfFile] }));
+                if (canShareFiles) {
+                    await navigator.share({
+                        files: [pdfFile],
+                        title: currentPdfFileName.replace(/\.pdf$/i, ''),
+                        text: currentShareMessage
+                    });
+                } else {
+                    window.alert('Tu navegador no permite compartir archivos directamente a una app. Por favor, usa el botón "Descargar".');
+                }
+            } catch (error) {
+                if (error.name !== 'AbortError') {
+                    console.error('Error al compartir', error);
+                }
+            }
+        }
+
+        function downloadPdfFromPreview() {
+            if (!currentPdfBlob) return;
+            const downloadUrl = URL.createObjectURL(currentPdfBlob);
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.download = currentPdfFileName;
+            link.click();
+            setTimeout(() => URL.revokeObjectURL(downloadUrl), 100);
         }
 
         function recalc(elem) {
