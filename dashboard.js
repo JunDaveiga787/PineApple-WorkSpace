@@ -318,7 +318,6 @@
             <div class="detail-actions">
                 <button class="btn btn-secondary btn-sm" type="button" data-action="open">Editar</button>
                 <button class="btn btn-secondary btn-sm" type="button" data-action="duplicate">Duplicar</button>
-                <button class="btn btn-secondary btn-sm" type="button" data-action="move">Mover de cliente</button>
                 <button class="btn btn-secondary btn-sm is-wide" type="button" data-action="download">Descargar aviso original</button>
                 ${documentData.deletedAt
                     ? `<button class="btn btn-secondary btn-sm is-wide" type="button" data-action="restore">Restaurar</button>
@@ -341,8 +340,7 @@
     }
 
     function openEditor(documentData) {
-        const opened = window.open(`cotizaciones.html?doc=${encodeURIComponent(documentData.id)}`, '_blank');
-        if (!opened) toast('El navegador bloqueó la pestaña. Permite las ventanas emergentes.', 'warn');
+        window.location.href = `cotizaciones.html?doc=${encodeURIComponent(documentData.id)}`;
     }
 
     async function duplicateDocument(documentData) {
@@ -753,7 +751,7 @@
                 cliente: newDoc.dataset.newDoc,
                 id: newDoc.dataset.newId || ''
             });
-            window.open(`cotizaciones.html?${params.toString()}`, '_blank');
+            window.location.href = `cotizaciones.html?${params.toString()}`;
             return;
         }
 

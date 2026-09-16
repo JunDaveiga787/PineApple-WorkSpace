@@ -370,7 +370,7 @@
                 cliente: state.clientName,
                 id: state.clientId
             });
-            window.open(`cotizaciones.html?${params.toString()}`, '_blank');
+            window.location.href = `cotizaciones.html?${params.toString()}`;
         }
     });
 
