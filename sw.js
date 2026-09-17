@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pineapple-app-v42';
+const CACHE_NAME = 'pineapple-app-v43';
 const APP_FILES = [
     './',
     './index.html',
@@ -56,15 +56,19 @@ self.addEventListener('fetch', event => {
         return;
     }
 
+    // El resto de archivos locales (CSS/JS) también se piden primero a la red
+    // para que los cambios se apliquen de inmediato. La caché queda solo como
+    // respaldo cuando no hay conexión. Antes era cache-first y la app seguía
+    // sirviendo CSS/JS viejos aunque se actualizaran.
     event.respondWith(
-        caches.match(event.request).then(cachedResponse => {
-            const networkResponse = fetch(event.request).then(response => {
-                const responseToCache = response.clone();
-                caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseToCache));
+        fetch(event.request)
+            .then(response => {
+                if (response.ok) {
+                    const copy = response.clone();
+                    caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+                }
                 return response;
-            });
-
-            return cachedResponse || networkResponse.catch(() => caches.match(event.request));
-        })
+            })
+            .catch(() => caches.match(event.request))
     );
 });

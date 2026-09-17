@@ -950,11 +950,13 @@ button,
 }
 
 @media (max-width: 760px) {
-	body {
-		padding: 12px 8px 32px;
-		-webkit-tap-highlight-color: transparent;
-		touch-action: manipulation;
-	}
+body {
+padding: 12px 8px 32px;
+-webkit-tap-highlight-color: transparent;
+/* pan-x pan-y (no 'manipulation') para bloquear también el pellizco;
+   'manipulation' permitía el zoom por pellizco en esta página. */
+	touch-action: pan-x pan-y;
+}
 
 	[contenteditable="true"] {
 		-webkit-user-select: text;
