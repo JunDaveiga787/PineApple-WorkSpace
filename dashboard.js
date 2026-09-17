@@ -364,13 +364,36 @@
 
     async function purgeDocument(documentData) {
         if (!window.confirm(`¿Eliminar definitivamente "${documentData.displayName}"?`)) return;
+
+        // La eliminación definitiva depende del servidor: si no se confirma el
+        // borrado remoto, NO se toca la caché local. Así el documento nunca
+        // desaparece aquí para reaparecer luego al sincronizar con la base.
+        const deletedRemotely = await deleteDocumentFromDatabase(documentData.id);
+
+        if (!deletedRemotely) {
+            toast('No se pudo eliminar: sin conexión al servidor. Intenta de nuevo.');
+            return;
+        }
+
         await window.pineappleDB.remove('documents', documentData.id);
         await window.pineappleDB.remove('files', documentData.id).catch(() => {});
         state.documents = state.documents.filter(item => item.id !== documentData.id);
         closeDetail();
         render();
-        await pushDocumentToDatabase({ ...documentData, deletedAt: documentData.deletedAt || new Date().toISOString(), purged: true });
         toast('Documento eliminado definitivamente.');
+    }
+
+    // Borra el documento en la base de datos remota. Devuelve true solo si el
+    // servidor confirmó el borrado; false si no hay conexión o el servidor falló.
+    async function deleteDocumentFromDatabase(documentId) {
+        if (!documentId) return true;
+        if (typeof fetchJson !== 'function' || !DOCS_API) return false;
+        try {
+            await fetchJson(`${DOCS_API}?id=${encodeURIComponent(documentId)}`, { method: 'DELETE' });
+            return true;
+        } catch (error) {
+            return false;
+        }
     }
 
     function downloadDocument(documentData) {
