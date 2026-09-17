@@ -22,6 +22,10 @@ html {
 	   Safari lo trataría como un segundo scroll anidado dentro de este,
 	   lo cual causa tirones/freezes al hacer scroll en iPhone. */
 	overflow-x: hidden;
+	/* Sin zoom: se permite desplazar el contenido pero se bloquea el
+	   pellizco y el doble toque que agrandan la página. */
+	touch-action: pan-x pan-y;
+	-webkit-text-size-adjust: 100%;
 }
 
 body {
