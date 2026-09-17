@@ -348,22 +348,33 @@
             }
         }
 
+        // Devuelve la hora de República Dominicana (UTC-4 todo el año, sin
+        // horario de verano) sin depender de la zona horaria del dispositivo.
+        function getDominicanHour() {
+            const formatter = new Intl.DateTimeFormat('en-US', {
+                timeZone: 'America/Santo_Domingo',
+                hour: 'numeric',
+                hour12: false
+            });
+            const hour = Number(formatter.format(new Date()));
+            return Number.isFinite(hour) ? (hour % 24) : new Date().getHours();
+        }
+
+        // Saludo y despedida según el momento del día en República Dominicana:
+        // de 5:00 a 11:59 "Buenos días", de 12:00 a 18:59 "Buenas tardes",
+        // el resto "Buenas noches".
+        function getDominicanGreeting() {
+            const hour = getDominicanHour();
+            if (hour >= 5 && hour < 12) return { greeting: 'Buenos días', wish: 'día' };
+            if (hour >= 12 && hour < 19) return { greeting: 'Buenas tardes', wish: 'tarde' };
+            return { greeting: 'Buenas noches', wish: 'noche' };
+        }
+
         function getShareMessage() {
-            const documentType = document.querySelector('.doc-title').innerText.trim();
-            const metaValues = document.querySelectorAll('.doc-meta .meta-value');
-            const client = metaValues[1] ? metaValues[1].innerText.trim() : '';
-            const rows = [...document.querySelectorAll('#table-body tr')]
-                .map(row => {
-                    const description = row.querySelector('td:first-child').innerText.trim();
-                    const quantity = row.querySelector('.qty').innerText.trim();
-                    const total = row.querySelector('.row-total').innerText.trim();
+            const documentType = document.querySelector('.doc-title').innerText.trim().toLowerCase();
+            const { greeting, wish } = getDominicanGreeting();
 
-                    return description ? `- ${description}${quantity ? ` x${quantity}` : ''}${total ? `: ${total}` : ''}` : null;
-                })
-                .filter(Boolean);
-            const total = document.getElementById('grand-total').innerText.trim();
-
-            return `Hola, te comparto esta ${documentType.toLowerCase()} de PineApple Multiservice.${client ? `\nCliente: ${client}` : ''}${rows.length ? `\n\n${rows.join('\n')}` : ''}\n\nTotal: ${total}`;
+            return `Saludos (${greeting}), aquí está su ${documentType}. Esperamos que tenga feliz ${wish}.`;
         }
 
         let currentPdfBlob = null;
