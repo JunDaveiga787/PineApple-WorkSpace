@@ -1791,3 +1791,27 @@ padding: 12px 8px 32px;
 .modal-footer .btn svg {
     flex-shrink: 0;
 }
+/* Sin zoom en toda la app: cubre los contextos que iOS trata de forma
+   especial (campos editables, modales y previsualización del PDF), donde el
+   pellizco podía agrandar la página aunque el resto estuviera bloqueado. */
+html,
+body,
+.modal-overlay,
+.modal-content,
+.modal-body,
+.pdf-preview-modal,
+[contenteditable="true"] {
+	touch-action: pan-x pan-y;
+}
+
+.modal-body img,
+#pdf-preview-img {
+	touch-action: pan-x pan-y;
+	-webkit-user-select: none;
+	user-select: none;
+	pointer-events: none;
+}
+
+.modal-body iframe {
+	touch-action: pan-x pan-y;
+}

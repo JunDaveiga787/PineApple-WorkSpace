@@ -1100,3 +1100,15 @@ body.is-dashboard-locked .client-filter-bar {
 	display: none !important;
 	}
 }
+/* Sin zoom en toda la app: refuerza el bloqueo del pellizco en los overlays
+   y el contenido del detalle, que iOS podía tratar de forma especial. */
+html,
+body,
+.detail-overlay,
+.detail-panel,
+.detail-body,
+.picker-overlay,
+.picker-card,
+[contenteditable="true"] {
+	touch-action: pan-x pan-y;
+}

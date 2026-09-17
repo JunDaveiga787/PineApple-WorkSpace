@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pineapple-app-v43';
+const CACHE_NAME = 'pineapple-app-v44';
 const APP_FILES = [
     './',
     './index.html',

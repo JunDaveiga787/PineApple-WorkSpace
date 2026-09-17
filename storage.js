@@ -12,15 +12,35 @@
        touch-action, corta el zoom con Ctrl/⌘ + rueda, los gestos de Safari
        (gesturestart/change), el doble toque y los atajos de teclado. */
     function lockPageZoom() {
+        const doc = global.document;
+
         // Zoom con Ctrl/⌘ + rueda del ratón o trackpad.
         global.addEventListener('wheel', event => {
             if (event.ctrlKey || event.metaKey) event.preventDefault();
         }, { passive: false });
 
-        // Zoom por gestos de Safari (pellizco) en iOS/macOS.
+        // Zoom por gestos de Safari (pellizco) en iOS/macOS. Se registra en el
+        // documento y en la ventana, con captura, para que ningún contenedor
+        // (overlay, modal o previsualización) se quede sin bloquear.
         ['gesturestart', 'gesturechange', 'gestureend'].forEach(name => {
-            global.addEventListener(name, event => event.preventDefault(), { passive: false });
+            const block = event => event.preventDefault();
+            doc.addEventListener(name, block, { passive: false, capture: true });
+            global.addEventListener(name, block, { passive: false, capture: true });
         });
+
+        // Pellizco táctil real: si hay 2+ dedos sobre la pantalla, se cancela.
+        // Esto es lo que bloquea el zoom en iOS aunque el sistema decida
+        // ignorar "user-scalable=no".
+        doc.addEventListener('touchstart', event => {
+            if (event.touches && event.touches.length > 1) event.preventDefault();
+        }, { passive: false, capture: true });
+
+        doc.addEventListener('touchmove', event => {
+            if (event.touches && event.touches.length > 1) event.preventDefault();
+        }, { passive: false, capture: true });
+
+        // Aún más agresivo: anula el evento de gesto nativo del navegador.
+        doc.addEventListener('gesturestart', event => event.preventDefault(), { passive: false });
 
         // Zoom con teclado: Ctrl/⌘ con +, -, =, 0.
         global.addEventListener('keydown', event => {
@@ -30,7 +50,7 @@
 
         // Doble toque que agranda la página en móvil.
         let lastTouchEnd = 0;
-        global.addEventListener('touchend', event => {
+        doc.addEventListener('touchend', event => {
             const now = Date.now();
             if (now - lastTouchEnd <= 300) event.preventDefault();
             lastTouchEnd = now;
