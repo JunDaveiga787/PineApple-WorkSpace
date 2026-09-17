@@ -4278,6 +4278,19 @@
 
             const now = new Date().toISOString();
             const id = dashboardDocId || window.pineappleStore.makeId('doc');
+
+            // Si el documento ya está en la papelera, guardar aquí NO debe sacarlo:
+            // antes se escribía deletedAt: null y cualquier guardado automático
+            // "resucitaba" el documento, así que parecía que "Mover a la papelera"
+            // no funcionaba. Se conserva la fecha de papelera que ya exista.
+            let existingDeletedAt = null;
+            try {
+                const existing = await window.pineappleDB.get('documents', id);
+                existingDeletedAt = existing && existing.deletedAt ? existing.deletedAt : null;
+            } catch (error) {
+                existingDeletedAt = null;
+            }
+
             const record = {
                 id: id,
                 clientId: data.client.id,
@@ -4295,7 +4308,7 @@
                 },
                 createdAt: dashboardCreatedAt || now,
                 updatedAt: now,
-                deletedAt: null,
+                deletedAt: existingDeletedAt,
                 // Se marca como local hasta confirmar que la base de datos lo recibió.
                 remote: false
             };

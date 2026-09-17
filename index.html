@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#f5f5f7">
     <title>Dashboard | PineApple Work Center</title>
     <link rel="icon" type="image/png" sizes="512x512" href="https://res.cloudinary.com/nox-company/image/upload/v1788821914/PineApple%20Service%20Media/ChatGPT_Image_Sep_7_2026_06_30_53_PM-Photoroom_tip3f5.png?v=19">
-    <link rel="stylesheet" href="dashboard.css?v=21">
+    <link rel="stylesheet" href="dashboard.css?v=22">
 </head>
 <body>
 
@@ -29,15 +29,20 @@
         <section class="stat-grid" id="dash-stats" aria-label="Resumen"></section>
 
         <div class="client-filter-bar">
-            <label class="client-filter-label" for="client-filter-select">
+            <label class="client-filter-label" for="client-filter-input">
                 <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
-                    <path d="M3 5h18M6 12h12M10 19h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM16.5 16.5L21 21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                 </svg>
                 <span>Cliente</span>
             </label>
-            <select id="client-filter-select" class="client-filter-select">
-                <option value="">Todos los clientes</option>
-            </select>
+            <input id="client-filter-input" class="client-filter-input" type="search"
+                   placeholder="Todos los clientes" autocomplete="off"
+                   aria-label="Buscar cliente">
+            <button class="client-filter-clear" type="button" id="client-filter-clear" aria-label="Limpiar búsqueda" hidden>
+                <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+                    <path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+                </svg>
+            </button>
         </div>
 
         <main class="clients-grid" id="clients-grid" aria-label="Carpetas de clientes"></main>
@@ -87,7 +92,19 @@
     <script>
         (function () {
             const PASSWORD = '123456789';
+            // localStorage (no sessionStorage): la contraseña se recuerda en ESTE
+            // dispositivo, así no se vuelve a pedir cada vez que se abre la app.
+            // Si localStorage está bloqueado (modo privado), se cae a sessionStorage.
             const STORAGE_KEY = 'pineappleDashboardUnlocked';
+            const deviceStore = (() => {
+                try {
+                    localStorage.setItem('pineappleProbe', '1');
+                    localStorage.removeItem('pineappleProbe');
+                    return localStorage;
+                } catch (error) {
+                    return sessionStorage;
+                }
+            })();
             const shell = document.querySelector('.dash-shell');
             const lock = document.getElementById('dash-lock');
             const form = document.getElementById('dash-lock-form');
@@ -130,11 +147,12 @@
                     shell.style.userSelect = '';
                 }
                 lock.hidden = true;
-                sessionStorage.setItem(STORAGE_KEY, 'true');
+                deviceStore.setItem(STORAGE_KEY, 'true');
                 focusUrlTarget();
             }
 
-            if (sessionStorage.getItem(STORAGE_KEY) === 'true') {
+            // Ya desbloqueado en este dispositivo: entra directo, sin pedir nada.
+            if (deviceStore.getItem(STORAGE_KEY) === 'true') {
                 document.body.classList.remove('is-dashboard-locked');
                 lock.hidden = true;
                 focusUrlTarget();
@@ -163,6 +181,6 @@
 
     <script src="db.js?v=11"></script>
     <script src="storage.js?v=12"></script>
-    <script src="dashboard.js?v=16"></script>
+    <script src="dashboard.js?v=17"></script>
 </body>
 </html>

@@ -367,7 +367,7 @@ body.is-dashboard-locked .client-filter-bar {
 	white-space: nowrap;
 }
 
-.client-filter-select {
+.client-filter-input {
 	flex: 1 1 auto;
 	min-width: 0;
 	height: 38px;
@@ -381,17 +381,52 @@ body.is-dashboard-locked .client-filter-bar {
 	font-weight: 600;
 	appearance: none;
 	-webkit-appearance: none;
-	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234f5055' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-	background-repeat: no-repeat;
-	background-position: right 12px center;
-	background-size: 16px;
-	padding-right: 34px;
 }
 
-.client-filter-select:focus {
+/* La «x» nativa del input type=search no se usa: hay un botón propio. */
+.client-filter-input::-webkit-search-decoration,
+.client-filter-input::-webkit-search-cancel-button,
+.client-filter-input::-webkit-search-results-button,
+.client-filter-input::-webkit-search-results-decoration {
+	-webkit-appearance: none;
+	appearance: none;
+}
+
+.client-filter-input::placeholder {
+	color: var(--muted);
+	font-weight: 600;
+}
+
+.client-filter-input:focus {
 	border-color: var(--secondary);
 	outline: 3px solid rgba(168, 85, 247, 0.16);
 	background-color: #fff;
+}
+
+.client-filter-clear {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 auto;
+	width: 30px;
+	height: 30px;
+	margin-right: 4px;
+	padding: 0;
+	border: none;
+	border-radius: 50%;
+	color: var(--muted);
+	background: #f5f5f7;
+	cursor: pointer;
+	transition: background 0.15s ease, color 0.15s ease;
+}
+
+.client-filter-clear:hover {
+	color: var(--ink);
+	background: #e8e8ec;
+}
+
+.client-filter-clear:focus-visible {
+	outline: 3px solid rgba(168, 85, 247, 0.16);
 }
 	display: flex;
 	gap: 6px;
@@ -999,10 +1034,15 @@ body.is-dashboard-locked .client-filter-bar {
 	text-overflow: ellipsis;
 	}
 
-		.client-filter-select {
+			.client-filter-input {
 		/* 16px evita el zoom automático de iOS al enfocar. */
 		font-size: 16px;
-		height: 44px;
+			height: 44px;
+		}
+
+		.client-filter-clear {
+		width: 34px;
+			height: 34px;
 		}
 
 		.clients-grid {

@@ -31,7 +31,8 @@
     const el = {
         stats: document.getElementById('dash-stats'),
         grid: document.getElementById('clients-grid'),
-        clientFilter: document.getElementById('client-filter-select'),
+        clientFilter: document.getElementById('client-filter-input'),
+        clientFilterClear: document.getElementById('client-filter-clear'),
         trashBtn: document.getElementById('trash-toggle'),
         overlay: document.getElementById('detail-overlay'),
         detail: document.getElementById('detail-body'),
@@ -134,11 +135,17 @@
                 if (!folder.active.length) return false;
                 if (state.view === 'invoices' && !folder.invoices) return false;
 
-                // Filtro por cliente: compara por id de cliente cuando existe,
-                // y si no, por el nombre normalizado de la carpeta.
+                // Filtro por cliente: es una búsqueda de texto libre. Se compara
+                // contra el nombre de la carpeta, el nombre del cliente y su id,
+                // ignorando acentos y mayúsculas.
                 if (state.clientFilter) {
-                    const folderKey = folder.id ? normalizeClientId(folder.id) : clientKey(folder.name);
-                    if (folderKey !== state.clientFilter) return false;
+                    const needle = normalizeText(state.clientFilter);
+                    const haystack = [
+                        folder.name,
+                        folder.id ? normalizeClientId(folder.id) : '',
+                        String(folder.id || '').replace(/^@/, '')
+                    ].filter(Boolean).join(' ');
+                    if (!normalizeText(haystack).includes(needle)) return false;
                 }
 
                 return true;
@@ -151,32 +158,16 @@
             });
     }
 
-    // Reconstruye las opciones del <select> de clientes a partir de las
-    // carpetas actuales, conservando la selección activa si sigue existiendo.
-    function renderClientFilterOptions() {
+    // El buscador de clientes es un campo de texto: solo hay que reflejar el
+    // valor activo y mostrar u ocultar la «x» para borrar la búsqueda.
+    function renderClientFilter() {
         if (!el.clientFilter) return;
-
-        const current = state.clientFilter;
-        // Viene directo de la base de datos (state.clients), no de las carpetas:
-        // así aparecen todos los clientes aunque todavía no tengan documentos.
-        const options = state.clients
-            .filter(client => !client.deletedAt && client.name)
-            .map(client => ({
-                value: normalizeClientId(client.id) || clientKey(client.name),
-                label: client.name
-            }))
-            .sort((a, b) => a.label.localeCompare(b.label, 'es'));
-
-        el.clientFilter.innerHTML = [
-            '<option value="">Todos los clientes</option>',
-            ...options.map(option => `<option value="${escapeHtml(option.value)}">${escapeHtml(option.label)}</option>`)
-        ].join('');
-
-        // Si el cliente seleccionado ya no existe (se eliminó/purgó), volvemos a "Todos".
-        if (current && !options.some(option => option.value === current)) {
-            state.clientFilter = '';
+        if (document.activeElement !== el.clientFilter) {
+            el.clientFilter.value = state.clientFilter;
         }
-        el.clientFilter.value = state.clientFilter;
+        if (el.clientFilterClear) {
+            el.clientFilterClear.hidden = !state.clientFilter;
+        }
     }
 
 
@@ -268,7 +259,7 @@
         const folders = buildFolders();
         renderStats(folders);
 
-        renderClientFilterOptions();
+        renderClientFilter();
 
         const visible = visibleFolders(folders);
         el.grid.innerHTML = visible.length
@@ -809,10 +800,33 @@
         if (event.key === 'pineappleDocumentsChanged') syncFromDatabase({ silent: true });
     });
 
-    // ---- Filtro por cliente ----
+    // ---- Buscador de clientes ----
+    // Se filtra mientras se escribe. El render es ligero (solo se vuelven a
+    // pintar las tarjetas), así que no hace falta retrasar la entrada.
     if (el.clientFilter) {
-        el.clientFilter.addEventListener('change', event => {
-            state.clientFilter = event.target.value;
+        el.clientFilter.addEventListener('input', event => {
+            state.clientFilter = event.target.value.trim();
+            render();
+        });
+
+        el.clientFilter.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && state.clientFilter) {
+                event.stopPropagation();
+                state.clientFilter = '';
+                el.clientFilter.value = '';
+                render();
+                el.clientFilter.blur();
+            }
+        });
+    }
+
+    if (el.clientFilterClear) {
+        el.clientFilterClear.addEventListener('click', () => {
+            state.clientFilter = '';
+            if (el.clientFilter) {
+                el.clientFilter.value = '';
+                el.clientFilter.focus();
+            }
             render();
         });
     }
