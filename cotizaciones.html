@@ -360,21 +360,24 @@
             return Number.isFinite(hour) ? (hour % 24) : new Date().getHours();
         }
 
-        // Saludo y despedida según el momento del día en República Dominicana:
+        // Saludo según el momento del día en República Dominicana:
         // de 5:00 a 11:59 "Buenos días", de 12:00 a 18:59 "Buenas tardes",
-        // el resto "Buenas noches".
+        // el resto "Buenas noches". El "wish" es la misma palabra en
+        // minúscula y en singular/plural para la frase de despedida.
         function getDominicanGreeting() {
             const hour = getDominicanHour();
-            if (hour >= 5 && hour < 12) return { greeting: 'Buenos días', wish: 'día' };
-            if (hour >= 12 && hour < 19) return { greeting: 'Buenas tardes', wish: 'tarde' };
-            return { greeting: 'Buenas noches', wish: 'noche' };
+            if (hour >= 5 && hour < 12) return { greeting: 'Buenos días', wish: 'días', article: 'un' };
+            if (hour >= 12 && hour < 19) return { greeting: 'Buenas tardes', wish: 'tardes', article: 'una' };
+            return { greeting: 'Buenas noches', wish: 'noches', article: 'una' };
         }
 
         function getShareMessage() {
             const documentType = document.querySelector('.doc-title').innerText.trim().toLowerCase();
-            const { greeting, wish } = getDominicanGreeting();
+            const { greeting, wish, article } = getDominicanGreeting();
 
-            return `Saludos ${greeting}, aquí está su ${documentType}. Esperamos que tenga feliz ${wish}.`;
+            return `${greeting}.\n\n` +
+                `Aquí le enviamos la ${documentType}.\n\n` +
+                `Muchas gracias por su tiempo. Desde PineApple MultiService le deseamos ${article} excelente ${wish}.`;
         }
 
         let currentPdfBlob = null;
