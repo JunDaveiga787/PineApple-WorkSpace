@@ -8,6 +8,37 @@
         maximumFractionDigits: 2
     });
 
+    /* Bloquea el zoom en TODA la página: además de la meta viewport y
+       touch-action, corta el zoom con Ctrl/⌘ + rueda, los gestos de Safari
+       (gesturestart/change), el doble toque y los atajos de teclado. */
+    function lockPageZoom() {
+        // Zoom con Ctrl/⌘ + rueda del ratón o trackpad.
+        global.addEventListener('wheel', event => {
+            if (event.ctrlKey || event.metaKey) event.preventDefault();
+        }, { passive: false });
+
+        // Zoom por gestos de Safari (pellizco) en iOS/macOS.
+        ['gesturestart', 'gesturechange', 'gestureend'].forEach(name => {
+            global.addEventListener(name, event => event.preventDefault(), { passive: false });
+        });
+
+        // Zoom con teclado: Ctrl/⌘ con +, -, =, 0.
+        global.addEventListener('keydown', event => {
+            if (!event.ctrlKey && !event.metaKey) return;
+            if (['+', '-', '=', '0'].includes(event.key)) event.preventDefault();
+        });
+
+        // Doble toque que agranda la página en móvil.
+        let lastTouchEnd = 0;
+        global.addEventListener('touchend', event => {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) event.preventDefault();
+            lastTouchEnd = now;
+        }, { passive: false });
+    }
+
+    lockPageZoom();
+
     function normalizeText(text = '') {
         return String(text)
             .toLowerCase()
